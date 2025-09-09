@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DataTable from '../components/DataTable';
 import FilterBar from '../components/FilterBar';
+import ClientCreditHistory from '../components/ClientCreditHistory';
 import { 
   Eye, 
   FileText, 
@@ -9,11 +10,15 @@ import {
   Users,
   CheckCircle,
   AlertCircle,
-  XCircle
+  XCircle,
+  CreditCard,
+  History
 } from 'lucide-react';
 
 const Expedientes = () => {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [showCreditHistory, setShowCreditHistory] = useState(false);
+  const [selectedClient, setSelectedClient] = useState(null);
   const [filters, setFilters] = useState({
     cliente: '',
     promotor: '',
@@ -74,7 +79,13 @@ const Expedientes = () => {
     },
     {
       key: 'cliente',
-      header: 'Cliente'
+      header: 'Cliente',
+      render: (value, row) => (
+        <div>
+          <div className="font-medium text-gray-900">{value}</div>
+          <div className="text-sm text-gray-500">{row.documento}</div>
+        </div>
+      )
     },
     {
       key: 'sucursal',
@@ -83,6 +94,17 @@ const Expedientes = () => {
     {
       key: 'promotor',
       header: 'Promotor'
+    },
+    {
+      key: 'creditos',
+      header: 'Créditos',
+      render: (value, row) => (
+        <div className="flex items-center space-x-2">
+          <CreditCard className="w-4 h-4 text-blue-500" />
+          <span className="text-sm font-medium">{row.totalCreditos || 0}</span>
+          <span className="text-xs text-gray-500">({row.creditosActivos || 0} activos)</span>
+        </div>
+      )
     },
     {
       key: 'estado',
@@ -112,37 +134,57 @@ const Expedientes = () => {
     {
       id: '001',
       cliente: 'Juan Pérez',
+      documento: '12345678',
       sucursal: 'Centro',
       promotor: 'María García',
-      estado: 'Completo'
+      estado: 'Completo',
+      totalCreditos: 3,
+      creditosActivos: 2,
+      montoTotal: 120000
     },
     {
       id: '002',
       cliente: 'Ana Martínez',
+      documento: '87654321',
       sucursal: 'Norte',
       promotor: 'Carlos López',
-      estado: 'En revisión'
+      estado: 'En revisión',
+      totalCreditos: 1,
+      creditosActivos: 1,
+      montoTotal: 25000
     },
     {
       id: '003',
       cliente: 'Roberto Silva',
+      documento: '11223344',
       sucursal: 'Sur',
       promotor: 'Juan Pérez',
-      estado: 'Incompleto'
+      estado: 'Incompleto',
+      totalCreditos: 0,
+      creditosActivos: 0,
+      montoTotal: 0
     },
     {
       id: '004',
       cliente: 'Laura Rodríguez',
+      documento: '55667788',
       sucursal: 'Centro',
       promotor: 'Ana Martínez',
-      estado: 'Completo'
+      estado: 'Completo',
+      totalCreditos: 2,
+      creditosActivos: 1,
+      montoTotal: 45000
     },
     {
       id: '005',
       cliente: 'Miguel Torres',
+      documento: '99887766',
       sucursal: 'Norte',
       promotor: 'María García',
-      estado: 'En revisión'
+      estado: 'En revisión',
+      totalCreditos: 1,
+      creditosActivos: 0,
+      montoTotal: 15000
     }
   ];
 
@@ -150,6 +192,14 @@ const Expedientes = () => {
     {
       label: 'Abrir',
       onClick: (row) => setSelectedFile(row),
+      variant: 'primary'
+    },
+    {
+      label: 'Historial',
+      onClick: (row) => {
+        setSelectedClient(row);
+        setShowCreditHistory(true);
+      },
       variant: 'primary'
     }
   ];
@@ -218,8 +268,43 @@ const Expedientes = () => {
               <div>
                 <h4 className="font-medium text-gray-700 mb-2">Cliente: {selectedFile.cliente}</h4>
                 <p className="text-sm text-gray-600">ID: #{selectedFile.id}</p>
+                <p className="text-sm text-gray-600">Documento: {selectedFile.documento}</p>
                 <p className="text-sm text-gray-600">Sucursal: {selectedFile.sucursal}</p>
                 <p className="text-sm text-gray-600">Promotor: {selectedFile.promotor}</p>
+              </div>
+
+              {/* Resumen de Créditos */}
+              <div>
+                <h5 className="font-medium text-gray-700 mb-2 flex items-center">
+                  <CreditCard className="w-4 h-4 mr-2" />
+                  Resumen de Créditos
+                </h5>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <div className="font-medium text-blue-800">Total Créditos</div>
+                    <div className="text-2xl font-bold text-blue-600">{selectedFile.totalCreditos || 0}</div>
+                  </div>
+                  <div className="bg-green-50 p-3 rounded-lg">
+                    <div className="font-medium text-green-800">Créditos Activos</div>
+                    <div className="text-2xl font-bold text-green-600">{selectedFile.creditosActivos || 0}</div>
+                  </div>
+                  <div className="bg-purple-50 p-3 rounded-lg col-span-2">
+                    <div className="font-medium text-purple-800">Monto Total Solicitado</div>
+                    <div className="text-2xl font-bold text-purple-600">${(selectedFile.montoTotal || 0).toLocaleString()}</div>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <button
+                    onClick={() => {
+                      setSelectedClient(selectedFile);
+                      setShowCreditHistory(true);
+                    }}
+                    className="btn-primary flex items-center space-x-2 text-sm"
+                  >
+                    <History className="w-4 h-4" />
+                    <span>Ver Historial Completo</span>
+                  </button>
+                </div>
               </div>
 
               {/* Documents */}
@@ -311,6 +396,15 @@ const Expedientes = () => {
           )}
         </div>
       </div>
+
+      {/* Modal de Historial de Créditos */}
+      <ClientCreditHistory
+        client={selectedClient}
+        onClose={() => {
+          setShowCreditHistory(false);
+          setSelectedClient(null);
+        }}
+      />
     </div>
   );
 };

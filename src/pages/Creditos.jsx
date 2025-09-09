@@ -7,6 +7,7 @@ import CreditRenewal from '../components/CreditRenewal';
 import ProspectForm from '../components/ProspectForm';
 import ProspectsTable from '../components/ProspectsTable';
 import AssignPromoterModal from '../components/AssignPromoterModal';
+import CreditStatsOverview from '../components/CreditStatsOverview';
 import { FileText, CheckCircle, DollarSign, RefreshCw, Users, UserPlus } from 'lucide-react';
 
 const Creditos = () => {
@@ -245,6 +246,18 @@ const Creditos = () => {
           </button>
         </nav>
       </div>
+
+      {/* Estadísticas Generales */}
+      <CreditStatsOverview
+        totalClients={applications.length + prospects.length + 200} // Clientes totales estimados
+        totalPortfolio={applications.reduce((sum, app) => sum + (app.montoSolicitado || 0), 0) + 2000000} // Cartera total estimada
+        activeCredits={applications.filter(app => app.estado === 'Aprobado').length + 100} // Créditos activos estimados
+        pendingApplications={applications.filter(app => app.estado === 'Pendiente' || app.estado === 'En revisión').length}
+        overdueCredits={5} // En mora estimados
+        approvedThisMonth={applications.filter(app => app.estado === 'Aprobado').length}
+        prospects={prospects.length}
+        renewalsPending={3} // Renovaciones pendientes estimadas
+      />
 
       {/* Tab Content */}
       {activeTab === 'solicitudes' ? (

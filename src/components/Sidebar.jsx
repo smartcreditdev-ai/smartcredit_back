@@ -1,24 +1,28 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   LayoutDashboard, 
   CreditCard, 
   DollarSign, 
   FolderOpen, 
   BarChart3, 
-  Plug 
+  Plug,
+  Shield
 } from 'lucide-react';
 
 const Sidebar = () => {
   const location = useLocation();
+  const { t } = useTranslation();
 
   const menuItems = [
-    { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/creditos', label: 'Créditos', icon: CreditCard },
-    { path: '/cobranzas', label: 'Cobranzas', icon: DollarSign },
-    { path: '/expedientes', label: 'Expedientes', icon: FolderOpen },
-    { path: '/reportes', label: 'Reportes/BI', icon: BarChart3 },
-    { path: '/integraciones', label: 'Integraciones', icon: Plug },
+    { path: '/', label: t('navigation.dashboard'), icon: LayoutDashboard },
+    { path: '/creditos', label: t('navigation.creditos'), icon: CreditCard },
+    { path: '/cobranzas', label: t('navigation.cobranzas'), icon: DollarSign },
+    { path: '/expedientes', label: t('navigation.expedientes'), icon: FolderOpen },
+    { path: '/reportes', label: t('navigation.reportes'), icon: BarChart3 },
+    { path: '/integraciones', label: t('navigation.integraciones'), icon: Plug },
+    { path: '/administrador', label: t('navigation.administrador'), icon: Shield },
   ];
 
   return (

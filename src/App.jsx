@@ -7,6 +7,7 @@ import Cobranzas from './pages/Cobranzas';
 import Expedientes from './pages/Expedientes';
 import Reportes from './pages/Reportes';
 import Integraciones from './pages/Integraciones';
+import Administrador from './pages/Administrador';
 
 function App() {
   return (
@@ -39,6 +40,11 @@ function App() {
       <Route path="/integraciones" element={
         <MainLayout title="Integraciones" subtitle="Conectores y APIs del sistema">
           <Integraciones />
+        </MainLayout>
+      } />
+      <Route path="/administrador" element={
+        <MainLayout title="Administrador" subtitle="Gestión de usuarios, roles y configuraciones">
+          <Administrador />
         </MainLayout>
       } />
     </Routes>

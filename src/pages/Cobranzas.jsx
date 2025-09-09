@@ -1,17 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import StatCard from '../components/StatCard';
 import DataTable from '../components/DataTable';
-import ChartPlaceholder from '../components/ChartPlaceholder';
+import MoraSegmentationChart from '../components/MoraSegmentationChart';
+import CollectorsMap from '../components/CollectorsMap';
+import PortfolioTrendChart from '../components/PortfolioTrendChart';
+import AIVisitModal from '../components/AIVisitModal';
 import { 
   DollarSign, 
   Users, 
   TrendingDown, 
   FileText,
   Phone,
-  Calendar
+  Calendar,
+  Bot
 } from 'lucide-react';
 
 const Cobranzas = () => {
+  const { t } = useTranslation();
+  const [isAIVisitModalOpen, setIsAIVisitModalOpen] = useState(false);
+  const [selectedClients, setSelectedClients] = useState([]);
+
   const stats = [
     {
       title: 'Cartera en Mora',
@@ -118,6 +127,12 @@ const Cobranzas = () => {
     }
   ];
 
+  const handleAIVisit = () => {
+    // Por ahora usar todos los clientes, en el futuro se puede seleccionar específicos
+    setSelectedClients(data);
+    setIsAIVisitModalOpen(true);
+  };
+
   const actions = [
     {
       label: 'Plan',
@@ -142,16 +157,12 @@ const Cobranzas = () => {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ChartPlaceholder
-          type="bar"
-          title="Segmentación de Mora por Días"
-          description="Distribución de cartera en mora: 0-30, 31-60, 61+ días"
-        />
-        <ChartPlaceholder
-          type="map"
-          title="Mapa de Cobradores con Cartera Asignada"
-          description="Distribución geográfica de cobradores y su cartera"
-        />
+        <div className="card">
+          <MoraSegmentationChart />
+        </div>
+        <div className="card">
+          <CollectorsMap />
+        </div>
       </div>
 
       {/* Clients in Default Table */}
@@ -162,6 +173,13 @@ const Cobranzas = () => {
             <button className="btn-primary flex items-center space-x-2">
               <Phone className="w-4 h-4" />
               <span>Contactar Todos</span>
+            </button>
+            <button 
+              onClick={handleAIVisit}
+              className="btn-secondary flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
+            >
+              <Bot className="w-4 h-4" />
+              <span>{t('cobranzas.visitarConAI')}</span>
             </button>
             <button className="btn-secondary flex items-center space-x-2">
               <Calendar className="w-4 h-4" />
@@ -177,6 +195,18 @@ const Cobranzas = () => {
           onRowClick={(row) => console.log('Click en cliente:', row)}
         />
       </div>
+
+      {/* Tendencia de Cartera */}
+      <div className="card">
+        <PortfolioTrendChart />
+      </div>
+
+      {/* AI Visit Modal */}
+      <AIVisitModal 
+        isOpen={isAIVisitModalOpen}
+        onClose={() => setIsAIVisitModalOpen(false)}
+        selectedClients={selectedClients}
+      />
     </div>
   );
 };

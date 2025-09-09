@@ -1,6 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitch from './LanguageSwitch';
 
 const Header = ({ title, subtitle }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
@@ -11,9 +15,7 @@ const Header = ({ title, subtitle }) => {
           )}
         </div>
         <div className="flex items-center space-x-4">
-          <div className="text-sm text-gray-500">
-            Última actualización: {new Date().toLocaleString('es-ES')}
-          </div>
+          <LanguageSwitch />
         </div>
       </div>
     </div>
