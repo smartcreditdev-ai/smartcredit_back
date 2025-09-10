@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import DataTable from '../components/DataTable';
 import FilterBar from '../components/FilterBar';
 import ClientCreditHistory from '../components/ClientCreditHistory';
+import { useExpedientes } from '../hooks/useSupabaseData';
 import { 
   Eye, 
   FileText, 
@@ -12,7 +13,8 @@ import {
   AlertCircle,
   XCircle,
   CreditCard,
-  History
+  History,
+  Loader2
 } from 'lucide-react';
 
 const Expedientes = () => {
@@ -27,6 +29,9 @@ const Expedientes = () => {
   });
 
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Obtener datos reales de expedientes
+  const { expedientes, loading: expedientesLoading, error: expedientesError } = useExpedientes();
 
   const filterOptions = [
     {
@@ -130,63 +135,25 @@ const Expedientes = () => {
     }
   ];
 
-  const data = [
-    {
-      id: '001',
-      cliente: 'Juan Pérez',
-      documento: '12345678',
-      sucursal: 'Centro',
-      promotor: 'María García',
-      estado: 'Completo',
-      totalCreditos: 3,
-      creditosActivos: 2,
-      montoTotal: 120000
-    },
-    {
-      id: '002',
-      cliente: 'Ana Martínez',
-      documento: '87654321',
-      sucursal: 'Norte',
-      promotor: 'Carlos López',
-      estado: 'En revisión',
-      totalCreditos: 1,
-      creditosActivos: 1,
-      montoTotal: 25000
-    },
-    {
-      id: '003',
-      cliente: 'Roberto Silva',
-      documento: '11223344',
-      sucursal: 'Sur',
-      promotor: 'Juan Pérez',
-      estado: 'Incompleto',
-      totalCreditos: 0,
-      creditosActivos: 0,
-      montoTotal: 0
-    },
-    {
-      id: '004',
-      cliente: 'Laura Rodríguez',
-      documento: '55667788',
-      sucursal: 'Centro',
-      promotor: 'Ana Martínez',
-      estado: 'Completo',
-      totalCreditos: 2,
-      creditosActivos: 1,
-      montoTotal: 45000
-    },
-    {
-      id: '005',
-      cliente: 'Miguel Torres',
-      documento: '99887766',
-      sucursal: 'Norte',
-      promotor: 'María García',
-      estado: 'En revisión',
-      totalCreditos: 1,
-      creditosActivos: 0,
-      montoTotal: 15000
-    }
-  ];
+  // Usar datos reales de expedientes
+  const data = React.useMemo(() => {
+    if (!expedientes || expedientes.length === 0) return [];
+    
+    return expedientes.map(expediente => ({
+      id: expediente.id,
+      cliente: expediente.cliente || 'Cliente sin nombre',
+      documento: expediente.dni || 'Sin documento',
+      sucursal: expediente.sucursal || 'Sin sucursal',
+      promotor: expediente.promotor || 'Sin promotor',
+      estado: expediente.estado === 'Aprobado' ? 'Completo' : 
+              expediente.estado === 'Pendiente' ? 'En revisión' : 'Incompleto',
+      totalCreditos: 1, // Estimado por ahora
+      creditosActivos: expediente.estado === 'Aprobado' ? 1 : 0,
+      montoTotal: parseFloat(expediente.monto) || 0,
+      telefono: expediente.telefono,
+      email: expediente.email
+    }));
+  }, [expedientes]);
 
   const actions = [
     {
@@ -251,12 +218,23 @@ const Expedientes = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Files Table */}
         <div className="lg:col-span-2">
-          <DataTable
-            columns={columns}
-            data={data}
-            actions={actions}
-            onRowClick={(row) => setSelectedFile(row)}
-          />
+          {expedientesLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+              <span className="ml-2 text-gray-600">Cargando expedientes...</span>
+            </div>
+          ) : expedientesError ? (
+            <div className="text-center text-red-600 py-8">
+              <p>Error al cargar los expedientes: {expedientesError}</p>
+            </div>
+          ) : (
+            <DataTable
+              columns={columns}
+              data={data}
+              actions={actions}
+              onRowClick={(row) => setSelectedFile(row)}
+            />
+          )}
         </div>
 
         {/* File Details Panel */}

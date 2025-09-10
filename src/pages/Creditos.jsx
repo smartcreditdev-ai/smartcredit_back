@@ -8,7 +8,8 @@ import ProspectForm from '../components/ProspectForm';
 import ProspectsTable from '../components/ProspectsTable';
 import AssignPromoterModal from '../components/AssignPromoterModal';
 import CreditStatsOverview from '../components/CreditStatsOverview';
-import { FileText, CheckCircle, DollarSign, RefreshCw, Users, UserPlus } from 'lucide-react';
+import { useAplicaciones } from '../hooks/useSupabaseData';
+import { FileText, CheckCircle, DollarSign, RefreshCw, Users, UserPlus, Loader2 } from 'lucide-react';
 
 const Creditos = () => {
   const [activeTab, setActiveTab] = useState('solicitudes');
@@ -19,64 +20,8 @@ const Creditos = () => {
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [selectedProspect, setSelectedProspect] = useState(null);
   
-
-  // Datos de solicitudes de crédito
-  const [applications, setApplications] = useState([
-    {
-      id: 'S001',
-      cliente: 'Roberto Silva',
-      documento: '12345678',
-      email: 'roberto.silva@email.com',
-      telefono: '+54 11 1234-5678',
-      direccion: 'Av. Corrientes 1234, CABA',
-      ocupacion: 'Empleado',
-      ingresosMensuales: 80000,
-      gastosMensuales: 50000,
-      montoSolicitado: 15000,
-      plazo: 24,
-      producto: 'personal',
-      proposito: 'Compra de electrodomésticos',
-      cuotaMensual: 750,
-      estado: 'Pendiente',
-      fechaSolicitud: '2024-01-15T10:30:00Z'
-    },
-    {
-      id: 'S002',
-      cliente: 'Laura Rodríguez',
-      documento: '87654321',
-      email: 'laura.rodriguez@email.com',
-      telefono: '+54 11 8765-4321',
-      direccion: 'Av. Santa Fe 5678, CABA',
-      ocupacion: 'Profesional',
-      ingresosMensuales: 120000,
-      gastosMensuales: 70000,
-      montoSolicitado: 25000,
-      plazo: 36,
-      producto: 'hipotecario',
-      proposito: 'Compra de vivienda',
-      cuotaMensual: 1200,
-      estado: 'En revisión',
-      fechaSolicitud: '2024-01-14T14:20:00Z'
-    },
-    {
-      id: 'S003',
-      cliente: 'Miguel Torres',
-      documento: '11223344',
-      email: 'miguel.torres@email.com',
-      telefono: '+54 11 1122-3344',
-      direccion: 'Av. Rivadavia 9012, CABA',
-      ocupacion: 'Comerciante',
-      ingresosMensuales: 100000,
-      gastosMensuales: 60000,
-      montoSolicitado: 8000,
-      plazo: 12,
-      producto: 'automotriz',
-      proposito: 'Compra de vehículo',
-      cuotaMensual: 800,
-      estado: 'Aprobado',
-      fechaSolicitud: '2024-01-13T09:15:00Z'
-    }
-  ]);
+  // Obtener datos reales de aplicaciones
+  const { aplicaciones, loading: aplicacionesLoading, error: aplicacionesError } = useAplicaciones();
 
   // Datos de prospectos
   const [prospects, setProspects] = useState([
@@ -249,12 +194,12 @@ const Creditos = () => {
 
       {/* Estadísticas Generales */}
       <CreditStatsOverview
-        totalClients={applications.length + prospects.length + 200} // Clientes totales estimados
-        totalPortfolio={applications.reduce((sum, app) => sum + (app.montoSolicitado || 0), 0) + 2000000} // Cartera total estimada
-        activeCredits={applications.filter(app => app.estado === 'Aprobado').length + 100} // Créditos activos estimados
-        pendingApplications={applications.filter(app => app.estado === 'Pendiente' || app.estado === 'En revisión').length}
+        totalClients={aplicaciones?.length + prospects.length + 200 || 0} // Clientes totales estimados
+        totalPortfolio={aplicaciones?.reduce((sum, app) => sum + (parseFloat(app.monto) || 0), 0) + 2000000 || 0} // Cartera total estimada
+        activeCredits={aplicaciones?.filter(app => app.estado === 'Aprobado').length + 100 || 0} // Créditos activos estimados
+        pendingApplications={aplicaciones?.filter(app => app.estado === 'Pendiente' || app.estado === 'En revisión').length || 0}
         overdueCredits={5} // En mora estimados
-        approvedThisMonth={applications.filter(app => app.estado === 'Aprobado').length}
+        approvedThisMonth={aplicaciones?.filter(app => app.estado === 'Aprobado').length || 0}
         prospects={prospects.length}
         renewalsPending={3} // Renovaciones pendientes estimadas
       />
@@ -277,18 +222,29 @@ const Creditos = () => {
             </button>
           </div>
 
-          <CreditApplicationsTable
-            applications={applications}
-            onApprove={(application) => {
-              setSelectedApplication(application);
-              setShowApprovalModal(true);
-            }}
-            onReject={(application) => {
-              setSelectedApplication(application);
-              setShowApprovalModal(true);
-            }}
-            onView={handleViewApplication}
-          />
+          {aplicacionesLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+              <span className="ml-2 text-gray-600">Cargando solicitudes...</span>
+            </div>
+          ) : aplicacionesError ? (
+            <div className="text-center text-red-600 py-8">
+              <p>Error al cargar las solicitudes: {aplicacionesError}</p>
+            </div>
+          ) : (
+            <CreditApplicationsTable
+              applications={aplicaciones || []}
+              onApprove={(application) => {
+                setSelectedApplication(application);
+                setShowApprovalModal(true);
+              }}
+              onReject={(application) => {
+                setSelectedApplication(application);
+                setShowApprovalModal(true);
+              }}
+              onView={handleViewApplication}
+            />
+          )}
         </>
       ) : activeTab === 'cartera' ? (
         <PortfolioManagement />

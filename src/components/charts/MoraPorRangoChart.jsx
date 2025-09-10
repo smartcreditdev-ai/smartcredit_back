@@ -1,14 +1,28 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const MoraPorRangoChart = () => {
-  const data = [
-    { rango: '0-30 días', cantidad: 45, monto: 125000 },
-    { rango: '31-60 días', cantidad: 28, monto: 89000 },
-    { rango: '61-90 días', cantidad: 15, monto: 67000 },
-    { rango: '91-120 días', cantidad: 8, monto: 45000 },
-    { rango: '120+ días', cantidad: 12, monto: 78000 }
+const MoraPorRangoChart = ({ data = [] }) => {
+  // Datos por defecto si no se proporcionan
+  const defaultData = [
+    { rango: '0-30 días', cantidad: 0, monto: 0 },
+    { rango: '31-60 días', cantidad: 0, monto: 0 },
+    { rango: '61-90 días', cantidad: 0, monto: 0 },
+    { rango: '91+ días', cantidad: 0, monto: 0 }
   ];
+
+  // Transformar datos de Supabase al formato esperado por el gráfico
+  const chartData = React.useMemo(() => {
+    if (!data || data.length === 0) return defaultData;
+    
+    return data.map(item => ({
+      rango: item.rango === '0-30' ? '0-30 días' :
+             item.rango === '31-60' ? '31-60 días' :
+             item.rango === '61-90' ? '61-90 días' :
+             item.rango === '91+' ? '91+ días' : item.rango,
+      cantidad: item.cantidad || 0,
+      monto: item.monto || 0
+    }));
+  }, [data]);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -31,7 +45,7 @@ const MoraPorRangoChart = () => {
     <div className="w-full h-80">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
-          data={data}
+          data={chartData}
           margin={{
             top: 20,
             right: 30,

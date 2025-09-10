@@ -7,6 +7,7 @@ import SolicitudesAprobadasChart from '../components/charts/SolicitudesAprobadas
 import MapaClientesChart from '../components/charts/MapaClientesChart';
 import TendenciaCarteraChart from '../components/charts/TendenciaCarteraChart';
 import AISummaryModal from '../components/AISummaryModal';
+import { useDashboardStats, useChartData } from '../hooks/useSupabaseData';
 import { 
   CreditCard, 
   DollarSign, 
@@ -15,67 +16,102 @@ import {
   Bell,
   AlertTriangle,
   Bot,
-  FileText
+  FileText,
+  Loader2
 } from 'lucide-react';
 
 const Dashboard = () => {
   const { t } = useTranslation();
   const [isAISummaryModalOpen, setIsAISummaryModalOpen] = useState(false);
   
+  // Obtener datos reales de Supabase
+  const { stats: realStats, loading: statsLoading, error: statsError } = useDashboardStats();
+  const { data: moraData, loading: moraLoading } = useChartData('moraPorRango');
+  const { data: distribucionData, loading: distribucionLoading } = useChartData('distribucionCartera');
+  const { data: solicitudesData, loading: solicitudesLoading } = useChartData('solicitudesAprobadas');
+  const { data: mapaData, loading: mapaLoading } = useChartData('mapaClientes');
+  const { data: tendenciaData, loading: tendenciaLoading } = useChartData('tendenciaCartera');
+  
+  // Formatear estadísticas para las cards
   const stats = [
     {
       title: t('dashboard.creditosActivos'),
-      value: '1,247',
+      value: statsLoading ? '...' : realStats.creditosActivos.toLocaleString(),
       change: '+12%',
       icon: CreditCard,
       color: 'blue'
     },
     {
       title: t('dashboard.carteraTotal'),
-      value: '$2.4M',
+      value: statsLoading ? '...' : `$${(realStats.carteraTotal / 1000000).toFixed(1)}M`,
       change: '+8%',
       icon: DollarSign,
       color: 'green'
     },
     {
       title: t('dashboard.porcentajeMora'),
-      value: '3.2%',
+      value: statsLoading ? '...' : `${realStats.porcentajeMora}%`,
       change: '-0.5%',
       icon: TrendingDown,
       color: 'red'
     },
     {
       title: t('dashboard.promotoresActivos'),
-      value: '24',
+      value: statsLoading ? '...' : realStats.promotoresActivos.toString(),
       change: '+2',
       icon: Users,
       color: 'purple'
     }
   ];
 
-  const alerts = [
-    {
-      id: 1,
-      type: 'warning',
-      title: 'Cliente en mora crítica',
-      message: 'Juan Pérez - $5,000 (45 días)',
-      time: 'Hace 2 horas'
-    },
-    {
-      id: 2,
-      type: 'info',
-      title: 'Nueva solicitud',
-      message: 'María García - $3,500',
-      time: 'Hace 4 horas'
-    },
-    {
-      id: 3,
-      type: 'success',
-      title: 'Pago recibido',
-      message: 'Carlos López - $2,200',
-      time: 'Hace 6 horas'
+  // Obtener alertas dinámicas basadas en datos reales
+  const alerts = React.useMemo(() => {
+    const alertList = [];
+    
+    // Alertas de clientes en mora crítica
+    if (moraData && moraData.length > 0) {
+      const moraCritica = moraData.find(rango => rango.rango === '91+');
+      if (moraCritica && moraCritica.cantidad > 0) {
+        alertList.push({
+          id: 1,
+          type: 'warning',
+          title: 'Clientes en mora crítica',
+          message: `${moraCritica.cantidad} clientes con más de 90 días de mora`,
+          time: 'Reciente'
+        });
+      }
     }
-  ];
+    
+    // Alertas de nuevas solicitudes (simulado basado en datos)
+    if (solicitudesData && solicitudesData.length > 0) {
+      const pendientes = solicitudesData.find(tipo => tipo.tipo === 'Pendientes');
+      if (pendientes && pendientes.cantidad > 0) {
+        alertList.push({
+          id: 2,
+          type: 'info',
+          title: 'Solicitudes pendientes',
+          message: `${pendientes.cantidad} solicitudes esperando revisión`,
+          time: 'Reciente'
+        });
+      }
+    }
+    
+    // Alertas de aprobaciones recientes
+    if (solicitudesData && solicitudesData.length > 0) {
+      const aprobadas = solicitudesData.find(tipo => tipo.tipo === 'Aprobadas');
+      if (aprobadas && aprobadas.cantidad > 0) {
+        alertList.push({
+          id: 3,
+          type: 'success',
+          title: 'Solicitudes aprobadas',
+          message: `${aprobadas.cantidad} solicitudes aprobadas este mes`,
+          time: 'Reciente'
+        });
+      }
+    }
+    
+    return alertList;
+  }, [moraData, solicitudesData]);
 
   return (
     <div className="space-y-6">
@@ -94,6 +130,7 @@ const Dashboard = () => {
         </button>
       </div>
 
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
@@ -106,12 +143,24 @@ const Dashboard = () => {
         <div className="card">
           <h3 className="text-lg font-medium text-gray-900 mb-4">{t('dashboard.moraPorRango')}</h3>
           <p className="text-sm text-gray-600 mb-4">Distribución de cartera en mora por períodos</p>
-          <MoraPorRangoChart />
+          {moraLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+            </div>
+          ) : (
+            <MoraPorRangoChart data={moraData} />
+          )}
         </div>
         <div className="card">
           <h3 className="text-lg font-medium text-gray-900 mb-4">{t('dashboard.distribucionCartera')}</h3>
           <p className="text-sm text-gray-600 mb-4">Composición de la cartera por tipo de producto</p>
-          <DistribucionCarteraChart />
+          {distribucionLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+            </div>
+          ) : (
+            <DistribucionCarteraChart data={distribucionData} />
+          )}
         </div>
       </div>
 
@@ -119,12 +168,24 @@ const Dashboard = () => {
         <div className="card">
           <h3 className="text-lg font-medium text-gray-900 mb-4">{t('dashboard.solicitudesAprobadas')}</h3>
           <p className="text-sm text-gray-600 mb-4">Tendencia de aprobaciones del último mes</p>
-          <SolicitudesAprobadasChart />
+          {solicitudesLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+            </div>
+          ) : (
+            <SolicitudesAprobadasChart data={solicitudesData} />
+          )}
         </div>
         <div className="card">
           <h3 className="text-lg font-medium text-gray-900 mb-4">{t('dashboard.mapaClientes')}</h3>
           <p className="text-sm text-gray-600 mb-4">Distribución geográfica de la cartera</p>
-          <MapaClientesChart />
+          {mapaLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+            </div>
+          ) : (
+            <MapaClientesChart data={mapaData} />
+          )}
         </div>
       </div>
 
@@ -134,7 +195,13 @@ const Dashboard = () => {
           <div className="card">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Tendencia de Cartera</h3>
             <p className="text-sm text-gray-600 mb-4">Evolución de la cartera en los últimos 6 meses</p>
-            <TendenciaCarteraChart />
+            {tendenciaLoading ? (
+              <div className="flex items-center justify-center h-64">
+                <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+              </div>
+            ) : (
+              <TendenciaCarteraChart data={tendenciaData} />
+            )}
           </div>
         </div>
         

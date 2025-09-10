@@ -6,6 +6,7 @@ import MoraSegmentationChart from '../components/MoraSegmentationChart';
 import CollectorsMap from '../components/CollectorsMap';
 import PortfolioTrendChart from '../components/PortfolioTrendChart';
 import AIVisitModal from '../components/AIVisitModal';
+import { useClientesEnMora } from '../hooks/useSupabaseData';
 import { 
   DollarSign, 
   Users, 
@@ -13,44 +14,55 @@ import {
   FileText,
   Phone,
   Calendar,
-  Bot
+  Bot,
+  Loader2
 } from 'lucide-react';
 
 const Cobranzas = () => {
   const { t } = useTranslation();
   const [isAIVisitModalOpen, setIsAIVisitModalOpen] = useState(false);
   const [selectedClients, setSelectedClients] = useState([]);
+  
+  // Obtener datos reales de clientes en mora
+  const { clientes, loading: clientesLoading, error: clientesError } = useClientesEnMora();
 
-  const stats = [
-    {
-      title: 'Cartera en Mora',
-      value: '$125,400',
-      change: '-5%',
-      icon: DollarSign,
-      color: 'red'
-    },
-    {
-      title: 'Clientes en Mora',
-      value: '47',
-      change: '-3',
-      icon: Users,
-      color: 'red'
-    },
-    {
-      title: '% Mora',
-      value: '3.2%',
-      change: '-0.5%',
-      icon: TrendingDown,
-      color: 'green'
-    },
-    {
-      title: 'Planes de Pago Activos',
-      value: '12',
-      change: '+2',
-      icon: FileText,
-      color: 'blue'
-    }
-  ];
+  // Calcular estadísticas basadas en datos reales
+  const stats = React.useMemo(() => {
+    const carteraEnMora = clientes?.reduce((sum, cliente) => sum + (parseFloat(cliente.monto) || 0), 0) || 0;
+    const clientesEnMora = clientes?.length || 0;
+    const porcentajeMora = clientesEnMora > 0 ? ((clientesEnMora / 100) * 100).toFixed(1) : 0; // Estimado
+    
+    return [
+      {
+        title: 'Cartera en Mora',
+        value: `$${carteraEnMora.toLocaleString()}`,
+        change: '-5%',
+        icon: DollarSign,
+        color: 'red'
+      },
+      {
+        title: 'Clientes en Mora',
+        value: clientesEnMora.toString(),
+        change: '-3',
+        icon: Users,
+        color: 'red'
+      },
+      {
+        title: '% Mora',
+        value: `${porcentajeMora}%`,
+        change: '-0.5%',
+        icon: TrendingDown,
+        color: 'green'
+      },
+      {
+        title: 'Planes de Pago Activos',
+        value: '12', // Mantener como estimado por ahora
+        change: '+2',
+        icon: FileText,
+        color: 'blue'
+      }
+    ];
+  }, [clientes]);
 
   const columns = [
     {
@@ -94,38 +106,23 @@ const Cobranzas = () => {
     }
   ];
 
-  const data = [
-    {
-      cliente: 'Juan Pérez',
-      monto: 5000,
-      diasMora: 45,
-      estado: 'Crítico'
-    },
-    {
-      cliente: 'Ana Martínez',
-      monto: 3200,
-      diasMora: 25,
-      estado: 'En seguimiento'
-    },
-    {
-      cliente: 'Roberto Silva',
-      monto: 8000,
-      diasMora: 65,
-      estado: 'Crítico'
-    },
-    {
-      cliente: 'Laura Rodríguez',
-      monto: 1500,
-      diasMora: 15,
-      estado: 'En riesgo'
-    },
-    {
-      cliente: 'Miguel Torres',
-      monto: 4200,
-      diasMora: 0,
-      estado: 'Pago hoy'
-    }
-  ];
+  // Usar datos reales de clientes en mora
+  const data = React.useMemo(() => {
+    if (!clientes || clientes.length === 0) return [];
+    
+    return clientes.map(cliente => ({
+      cliente: cliente.cliente || 'Cliente sin nombre',
+      monto: parseFloat(cliente.monto) || 0,
+      diasMora: cliente.diasMora || 0,
+      estado: cliente.diasMora > 60 ? 'Crítico' : 
+              cliente.diasMora > 30 ? 'En seguimiento' : 
+              cliente.diasMora > 0 ? 'En riesgo' : 'Pago hoy',
+      telefono: cliente.telefono,
+      email: cliente.email,
+      direccion: cliente.direccion,
+      observaciones: cliente.observaciones
+    }));
+  }, [clientes]);
 
   const handleAIVisit = () => {
     // Por ahora usar todos los clientes, en el futuro se puede seleccionar específicos
@@ -158,7 +155,7 @@ const Cobranzas = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card">
-          <MoraSegmentationChart />
+          <MoraSegmentationChart data={data} />
         </div>
         <div className="card">
           <CollectorsMap />
@@ -188,12 +185,23 @@ const Cobranzas = () => {
           </div>
         </div>
         
-        <DataTable
-          columns={columns}
-          data={data}
-          actions={actions}
-          onRowClick={(row) => console.log('Click en cliente:', row)}
-        />
+        {clientesLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+            <span className="ml-2 text-gray-600">Cargando clientes en mora...</span>
+          </div>
+        ) : clientesError ? (
+          <div className="text-center text-red-600 py-8">
+            <p>Error al cargar los datos: {clientesError}</p>
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={data}
+            actions={actions}
+            onRowClick={(row) => console.log('Click en cliente:', row)}
+          />
+        )}
       </div>
 
       {/* Tendencia de Cartera */}

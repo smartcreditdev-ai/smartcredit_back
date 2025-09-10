@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.10",
+    "@supabase/supabase-js": "^2.57.4",
     "i18next": "^25.5.2",
     "i18next-browser-languagedetector": "^8.2.0",
     "lucide-react": "^0.294.0",

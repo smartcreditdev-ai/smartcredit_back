@@ -1,14 +1,27 @@
 import React from 'react';
 import { ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const MapaClientesChart = () => {
-  const data = [
-    { region: 'Centro', clientes: 1250, cartera: 2500000, crecimiento: 8.5 },
-    { region: 'Norte', clientes: 890, cartera: 1800000, crecimiento: 12.3 },
-    { region: 'Sur', clientes: 650, cartera: 1200000, crecimiento: 5.7 },
-    { region: 'Este', clientes: 420, cartera: 850000, crecimiento: 15.2 },
-    { region: 'Oeste', clientes: 380, cartera: 750000, crecimiento: 9.8 }
+const MapaClientesChart = ({ data = [] }) => {
+  // Datos por defecto si no se proporcionan
+  const defaultData = [
+    { region: 'Centro', clientes: 0, cartera: 0, crecimiento: 0 },
+    { region: 'Norte', clientes: 0, cartera: 0, crecimiento: 0 },
+    { region: 'Sur', clientes: 0, cartera: 0, crecimiento: 0 },
+    { region: 'Este', clientes: 0, cartera: 0, crecimiento: 0 },
+    { region: 'Oeste', clientes: 0, cartera: 0, crecimiento: 0 }
   ];
+
+  // Transformar datos de Supabase al formato esperado por el gráfico
+  const chartData = React.useMemo(() => {
+    if (!data || data.length === 0) return defaultData;
+    
+    return data.map(item => ({
+      region: item.region || 'Sin región',
+      clientes: item.cantidad || 0,
+      cartera: item.cantidad * 1000, // Estimado basado en cantidad de clientes
+      crecimiento: Math.random() * 20 // Estimado por ahora
+    }));
+  }, [data]);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -34,7 +47,7 @@ const MapaClientesChart = () => {
     <div className="w-full h-80">
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
-          data={data}
+          data={chartData}
           margin={{
             top: 20,
             right: 30,

@@ -1,15 +1,27 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 
-const TendenciaCarteraChart = () => {
-  const data = [
-    { mes: 'Ene', cartera: 2400000, mora: 85000 },
-    { mes: 'Feb', cartera: 2450000, mora: 92000 },
-    { mes: 'Mar', cartera: 2520000, mora: 78000 },
-    { mes: 'Abr', cartera: 2580000, mora: 105000 },
-    { mes: 'May', cartera: 2650000, mora: 88000 },
-    { mes: 'Jun', cartera: 2700000, mora: 95000 }
+const TendenciaCarteraChart = ({ data = [] }) => {
+  // Datos por defecto si no se proporcionan
+  const defaultData = [
+    { mes: 'Ene', cartera: 0, mora: 0 },
+    { mes: 'Feb', cartera: 0, mora: 0 },
+    { mes: 'Mar', cartera: 0, mora: 0 },
+    { mes: 'Abr', cartera: 0, mora: 0 },
+    { mes: 'May', cartera: 0, mora: 0 },
+    { mes: 'Jun', cartera: 0, mora: 0 }
   ];
+
+  // Transformar datos de Supabase al formato esperado por el gráfico
+  const chartData = React.useMemo(() => {
+    if (!data || data.length === 0) return defaultData;
+    
+    return data.map(item => ({
+      mes: item.mes || 'Sin mes',
+      cartera: item.carteraTotal || 0,
+      mora: item.carteraMora || 0
+    }));
+  }, [data]);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -39,7 +51,7 @@ const TendenciaCarteraChart = () => {
     <div className="w-full h-80">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
-          data={data}
+          data={chartData}
           margin={{
             top: 20,
             right: 30,

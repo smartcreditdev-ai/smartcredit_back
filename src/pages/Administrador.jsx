@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Header from '../components/Header';
 import UserModal from '../components/UserModal';
 import FormBuilder from '../components/FormBuilder';
+import { useUsuarios } from '../hooks/useSupabaseData';
 import { 
   Users, 
   UserPlus, 
@@ -16,7 +17,8 @@ import {
   Trash2,
   Plus,
   Save,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 
 const Administrador = () => {
@@ -26,6 +28,9 @@ const Administrador = () => {
   const [showFormBuilder, setShowFormBuilder] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [editingForm, setEditingForm] = useState(null);
+  
+  // Obtener datos reales de usuarios
+  const { usuarios, loading: usuariosLoading, error: usuariosError } = useUsuarios();
 
   const tabs = [
     { id: 'usuarios', label: t('administrador.gestionUsuarios'), icon: Users },
@@ -34,39 +39,21 @@ const Administrador = () => {
     { id: 'formularios', label: t('administrador.formulariosMoviles'), icon: Settings }
   ];
 
-  // Datos de ejemplo para usuarios
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      nombre: 'María García',
-      email: 'maria.garcia@smartcredit.com',
-      rol: 'Administrador',
-      sucursal: 'Centro',
-      estado: 'Activo',
-      fechaCreacion: '2023-01-15',
-      ultimoAcceso: '2024-01-15 10:30'
-    },
-    {
-      id: 2,
-      nombre: 'Carlos López',
-      email: 'carlos.lopez@smartcredit.com',
-      rol: 'Promotor',
-      sucursal: 'Norte',
-      estado: 'Activo',
-      fechaCreacion: '2023-02-20',
-      ultimoAcceso: '2024-01-14 16:45'
-    },
-    {
-      id: 3,
-      nombre: 'Ana Martínez',
-      email: 'ana.martinez@smartcredit.com',
-      rol: 'Supervisor',
-      sucursal: 'Sur',
-      estado: 'Inactivo',
-      fechaCreacion: '2023-03-10',
-      ultimoAcceso: '2024-01-10 09:15'
-    }
-  ]);
+  // Usar datos reales de usuarios
+  const users = React.useMemo(() => {
+    if (!usuarios || usuarios.length === 0) return [];
+    
+    return usuarios.map(usuario => ({
+      id: usuario.id,
+      nombre: usuario.nombre || 'Usuario sin nombre',
+      email: usuario.email || 'Sin email',
+      rol: usuario.rol || 'Sin rol',
+      sucursal: usuario.sucursal || 'Sin sucursal',
+      estado: usuario.estado || 'Inactivo',
+      fechaCreacion: usuario.fecha_creacion || new Date().toISOString().split('T')[0],
+      ultimoAcceso: usuario.ultimo_acceso || 'Nunca'
+    }));
+  }, [usuarios]);
 
   // Datos de ejemplo para usuarios móviles pendientes
   const [pendingUsers, setPendingUsers] = useState([
@@ -268,80 +255,91 @@ const Administrador = () => {
                 </button>
               </div>
 
-              <div className="bg-white shadow rounded-lg overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('common.formularios.nombre')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('common.formularios.rol')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('common.formularios.sucursal')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('common.formularios.estado')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Último Acceso
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Acciones
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {users.map((user) => (
-                      <tr key={user.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">{user.nombre}</div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${getRoleColor(user.rol)}`}>
-                            {user.rol}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {user.sucursal}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(user.estado)}`}>
-                            {user.estado}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {user.ultimoAcceso}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                          <button
-                            onClick={() => setEditingUser(user)}
-                            className="text-primary-600 hover:text-primary-900"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleToggleUserStatus(user.id)}
-                            className={`${user.estado === 'Activo' ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}`}
-                          >
-                            {user.estado === 'Activo' ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
-                          </button>
-                          <button
-                            onClick={() => handleDeleteUser(user.id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </td>
+              {usuariosLoading ? (
+                <div className="flex items-center justify-center h-64">
+                  <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                  <span className="ml-2 text-gray-600">Cargando usuarios...</span>
+                </div>
+              ) : usuariosError ? (
+                <div className="text-center text-red-600 py-8">
+                  <p>Error al cargar los usuarios: {usuariosError}</p>
+                </div>
+              ) : (
+                <div className="bg-white shadow rounded-lg overflow-hidden">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          {t('common.formularios.nombre')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          {t('common.formularios.rol')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          {t('common.formularios.sucursal')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          {t('common.formularios.estado')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Último Acceso
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Acciones
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {users.map((user) => (
+                        <tr key={user.id}>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">{user.nombre}</div>
+                              <div className="text-sm text-gray-500">{user.email}</div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${getRoleColor(user.rol)}`}>
+                              {user.rol}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {user.sucursal}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(user.estado)}`}>
+                              {user.estado}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {user.ultimoAcceso}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <button
+                              onClick={() => setEditingUser(user)}
+                              className="text-primary-600 hover:text-primary-900"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleToggleUserStatus(user.id)}
+                              className={`${user.estado === 'Activo' ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}`}
+                            >
+                              {user.estado === 'Activo' ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
+                            </button>
+                            <button
+                              onClick={() => handleDeleteUser(user.id)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 

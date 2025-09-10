@@ -1,15 +1,33 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const SolicitudesAprobadasChart = () => {
-  const data = [
-    { mes: 'Ene', aprobadas: 45, rechazadas: 12 },
-    { mes: 'Feb', aprobadas: 52, rechazadas: 8 },
-    { mes: 'Mar', aprobadas: 38, rechazadas: 15 },
-    { mes: 'Abr', aprobadas: 61, rechazadas: 9 },
-    { mes: 'May', aprobadas: 47, rechazadas: 11 },
-    { mes: 'Jun', aprobadas: 55, rechazadas: 7 }
+const SolicitudesAprobadasChart = ({ data = [] }) => {
+  // Datos por defecto si no se proporcionan
+  const defaultData = [
+    { mes: 'Ene', aprobadas: 0, rechazadas: 0 },
+    { mes: 'Feb', aprobadas: 0, rechazadas: 0 },
+    { mes: 'Mar', aprobadas: 0, rechazadas: 0 },
+    { mes: 'Abr', aprobadas: 0, rechazadas: 0 },
+    { mes: 'May', aprobadas: 0, rechazadas: 0 },
+    { mes: 'Jun', aprobadas: 0, rechazadas: 0 }
   ];
+
+  // Transformar datos de Supabase al formato esperado por el gráfico
+  const chartData = React.useMemo(() => {
+    if (!data || data.length === 0) return defaultData;
+    
+    // Agrupar por tipo de solicitud
+    const aprobadas = data.find(item => item.tipo === 'Aprobadas')?.cantidad || 0;
+    const rechazadas = data.find(item => item.tipo === 'Rechazadas')?.cantidad || 0;
+    const pendientes = data.find(item => item.tipo === 'Pendientes')?.cantidad || 0;
+    
+    // Crear datos para el último mes (simulado)
+    const mesActual = new Date().toLocaleDateString('es-ES', { month: 'short' });
+    
+    return [
+      { mes: mesActual, aprobadas, rechazadas, pendientes }
+    ];
+  }, [data]);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -40,7 +58,7 @@ const SolicitudesAprobadasChart = () => {
     <div className="w-full h-80">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
-          data={data}
+          data={chartData}
           margin={{
             top: 20,
             right: 30,

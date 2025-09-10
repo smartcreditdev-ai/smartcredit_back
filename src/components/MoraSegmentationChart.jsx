@@ -1,8 +1,9 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
-const MoraSegmentationChart = () => {
-  const data = [
+const MoraSegmentationChart = ({ data = [] }) => {
+  // Datos por defecto si no se proporcionan
+  const defaultData = [
     {
       name: '0-30 días',
       cantidad: 45,
@@ -29,6 +30,8 @@ const MoraSegmentationChart = () => {
     }
   ];
 
+  const chartData = data.length > 0 ? data : defaultData;
+
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
@@ -51,14 +54,14 @@ const MoraSegmentationChart = () => {
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium text-gray-900">Segmentación de Mora por Días</h3>
         <div className="text-sm text-gray-500">
-          Total: {data.reduce((sum, item) => sum + item.cantidad, 0)} clientes
+          Total: {chartData.reduce((sum, item) => sum + item.cantidad, 0)} clientes
         </div>
       </div>
       
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={data}
+            data={chartData}
             margin={{
               top: 20,
               right: 30,
@@ -78,7 +81,7 @@ const MoraSegmentationChart = () => {
             />
             <Tooltip content={<CustomTooltip />} />
             <Bar dataKey="cantidad" radius={[4, 4, 0, 0]}>
-              {data.map((entry, index) => (
+              {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Bar>
@@ -88,7 +91,7 @@ const MoraSegmentationChart = () => {
 
       {/* Leyenda */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {data.map((item, index) => (
+        {chartData.map((item, index) => (
           <div key={index} className="flex items-center space-x-2">
             <div 
               className="w-4 h-4 rounded"
