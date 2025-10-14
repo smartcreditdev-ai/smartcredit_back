@@ -5,24 +5,23 @@ import { CheckCircle, XCircle, Eye, Clock, AlertTriangle } from 'lucide-react';
 const CreditApplicationsTable = ({ applications, onApprove, onReject, onView }) => {
   const columns = [
     {
-      key: 'id',
-      header: 'ID',
-      render: (value) => <span className="font-mono text-sm">#{value}</span>
-    },
-    {
       key: 'cliente',
       header: 'Cliente',
       render: (value, row) => (
         <div>
           <div className="font-medium text-gray-900">{value}</div>
-          <div className="text-sm text-gray-500">{row.documento}</div>
+          <div className="text-sm text-gray-500">DNI: {row.documento}</div>
         </div>
       )
     },
     {
       key: 'montoSolicitado',
       header: 'Monto Solicitado',
-      render: (value) => <span className="font-semibold">${value?.toLocaleString()}</span>
+      render: (value) => (
+        <span className="font-semibold text-green-600">
+          ${value?.toLocaleString() || '0'}
+        </span>
+      )
     },
     {
       key: 'producto',
@@ -32,11 +31,14 @@ const CreditApplicationsTable = ({ applications, onApprove, onReject, onView }) 
           'personal': 'bg-blue-100 text-blue-800',
           'hipotecario': 'bg-green-100 text-green-800',
           'automotriz': 'bg-purple-100 text-purple-800',
-          'comercial': 'bg-orange-100 text-orange-800'
+          'comercial': 'bg-orange-100 text-orange-800',
+          'consumo': 'bg-indigo-100 text-indigo-800',
+          'vivienda': 'bg-pink-100 text-pink-800'
         };
+        const displayValue = value || 'Sin especificar';
         return (
-          <span className={`px-2 py-1 text-xs font-medium rounded-full ${productColors[value] || 'bg-gray-100 text-gray-800'}`}>
-            {value?.charAt(0).toUpperCase() + value?.slice(1)}
+          <span className={`px-2 py-1 text-xs font-medium rounded-full ${productColors[displayValue.toLowerCase()] || 'bg-gray-100 text-gray-800'}`}>
+            {displayValue.charAt(0).toUpperCase() + displayValue.slice(1)}
           </span>
         );
       }
@@ -44,12 +46,20 @@ const CreditApplicationsTable = ({ applications, onApprove, onReject, onView }) 
     {
       key: 'plazo',
       header: 'Plazo',
-      render: (value) => <span className="text-sm">{value} meses</span>
+      render: (value) => (
+        <span className="text-sm font-medium">
+          {value || 0} meses
+        </span>
+      )
     },
     {
       key: 'cuotaMensual',
       header: 'Cuota Mensual',
-      render: (value) => <span className="font-semibold">${value}</span>
+      render: (value) => (
+        <span className="font-semibold text-blue-600">
+          ${value?.toLocaleString() || '0'}
+        </span>
+      )
     },
     {
       key: 'estado',
@@ -95,11 +105,20 @@ const CreditApplicationsTable = ({ applications, onApprove, onReject, onView }) 
       }
     },
     {
+      key: 'ingresosMensuales',
+      header: 'Ingresos Mensuales',
+      render: (value) => (
+        <span className="text-sm font-medium text-gray-700">
+          ${value?.toLocaleString() || '0'}
+        </span>
+      )
+    },
+    {
       key: 'fechaSolicitud',
       header: 'Fecha Solicitud',
       render: (value) => (
         <span className="text-sm text-gray-600">
-          {new Date(value).toLocaleDateString('es-ES')}
+          {value ? new Date(value).toLocaleDateString('es-ES') : 'Sin fecha'}
         </span>
       )
     }

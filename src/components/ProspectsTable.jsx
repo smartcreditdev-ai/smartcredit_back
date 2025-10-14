@@ -5,11 +5,6 @@ import { UserCheck, UserX, Edit, Eye } from 'lucide-react';
 const ProspectsTable = ({ prospects, onAssignPromoter, onView, onEdit, onDelete }) => {
   const columns = [
     {
-      key: 'id',
-      header: 'ID',
-      render: (value) => <span className="font-mono text-sm">#{value}</span>
-    },
-    {
       key: 'cliente',
       header: 'Cliente',
       render: (value, row) => (

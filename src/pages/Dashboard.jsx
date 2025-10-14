@@ -37,28 +37,36 @@ const Dashboard = () => {
     {
       title: t('dashboard.creditosActivos'),
       value: statsLoading ? '...' : realStats.creditosActivos.toLocaleString(),
-      change: '+12%',
+      change: realStats.cambioAprobadas !== 0 ? 
+        `${realStats.cambioAprobadas > 0 ? '+' : ''}${realStats.cambioAprobadas}% vs mes anterior` : 
+        'Sin cambios',
       icon: CreditCard,
       color: 'blue'
     },
     {
       title: t('dashboard.carteraTotal'),
       value: statsLoading ? '...' : `$${(realStats.carteraTotal / 1000000).toFixed(1)}M`,
-      change: '+8%',
+      change: realStats.solicitudesAprobadasMes > 0 ? 
+        `+${realStats.solicitudesAprobadasMes} créditos este mes` : 
+        'Sin nuevos créditos',
       icon: DollarSign,
       color: 'green'
     },
     {
       title: t('dashboard.porcentajeMora'),
       value: statsLoading ? '...' : `${realStats.porcentajeMora}%`,
-      change: '-0.5%',
+      change: realStats.clientesEnMora > 0 ? 
+        `${realStats.clientesEnMora} clientes en mora` : 
+        'Sin mora',
       icon: TrendingDown,
-      color: 'red'
+      color: realStats.porcentajeMora > 10 ? 'red' : realStats.porcentajeMora > 5 ? 'orange' : 'green'
     },
     {
       title: t('dashboard.promotoresActivos'),
       value: statsLoading ? '...' : realStats.promotoresActivos.toString(),
-      change: '+2',
+      change: realStats.solicitudesPendientes > 0 ? 
+        `${realStats.solicitudesPendientes} solicitudes pendientes` : 
+        'Sin pendientes',
       icon: Users,
       color: 'purple'
     }
@@ -70,7 +78,7 @@ const Dashboard = () => {
     
     // Alertas de clientes en mora crítica
     if (moraData && moraData.length > 0) {
-      const moraCritica = moraData.find(rango => rango.rango === '91+');
+      const moraCritica = moraData.find(rango => rango.rango === '91+ días');
       if (moraCritica && moraCritica.cantidad > 0) {
         alertList.push({
           id: 1,
@@ -82,36 +90,52 @@ const Dashboard = () => {
       }
     }
     
-    // Alertas de nuevas solicitudes (simulado basado en datos)
-    if (solicitudesData && solicitudesData.length > 0) {
-      const pendientes = solicitudesData.find(tipo => tipo.tipo === 'Pendientes');
-      if (pendientes && pendientes.cantidad > 0) {
-        alertList.push({
-          id: 2,
-          type: 'info',
-          title: 'Solicitudes pendientes',
-          message: `${pendientes.cantidad} solicitudes esperando revisión`,
-          time: 'Reciente'
-        });
-      }
+    // Alertas de solicitudes pendientes
+    if (realStats.solicitudesPendientes > 0) {
+      alertList.push({
+        id: 2,
+        type: 'info',
+        title: 'Solicitudes pendientes',
+        message: `${realStats.solicitudesPendientes} solicitudes esperando revisión`,
+        time: 'Reciente'
+      });
     }
     
     // Alertas de aprobaciones recientes
-    if (solicitudesData && solicitudesData.length > 0) {
-      const aprobadas = solicitudesData.find(tipo => tipo.tipo === 'Aprobadas');
-      if (aprobadas && aprobadas.cantidad > 0) {
-        alertList.push({
-          id: 3,
-          type: 'success',
-          title: 'Solicitudes aprobadas',
-          message: `${aprobadas.cantidad} solicitudes aprobadas este mes`,
-          time: 'Reciente'
-        });
-      }
+    if (realStats.solicitudesAprobadasMes > 0) {
+      alertList.push({
+        id: 3,
+        type: 'success',
+        title: 'Solicitudes aprobadas',
+        message: `${realStats.solicitudesAprobadasMes} solicitudes aprobadas este mes`,
+        time: 'Reciente'
+      });
+    }
+    
+    // Alertas de porcentaje de mora alto
+    if (realStats.porcentajeMora > 10) {
+      alertList.push({
+        id: 4,
+        type: 'warning',
+        title: 'Porcentaje de mora alto',
+        message: `La mora representa el ${realStats.porcentajeMora}% de la cartera`,
+        time: 'Reciente'
+      });
+    }
+    
+    // Alertas de cartera en mora
+    if (realStats.clientesEnMora > 0) {
+      alertList.push({
+        id: 5,
+        type: 'info',
+        title: 'Clientes en mora',
+        message: `${realStats.clientesEnMora} clientes requieren seguimiento`,
+        time: 'Reciente'
+      });
     }
     
     return alertList;
-  }, [moraData, solicitudesData]);
+  }, [moraData, realStats]);
 
   return (
     <div className="space-y-6">

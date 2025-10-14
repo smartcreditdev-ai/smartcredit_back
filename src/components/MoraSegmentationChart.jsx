@@ -6,42 +6,85 @@ const MoraSegmentationChart = ({ data = [] }) => {
   const defaultData = [
     {
       name: '0-30 días',
-      cantidad: 45,
-      monto: 125000,
+      cantidad: 0,
+      monto: 0,
       color: '#10B981'
     },
     {
       name: '31-60 días',
-      cantidad: 28,
-      monto: 89000,
+      cantidad: 0,
+      monto: 0,
       color: '#F59E0B'
     },
     {
       name: '61-90 días',
-      cantidad: 15,
-      monto: 45000,
+      cantidad: 0,
+      monto: 0,
       color: '#EF4444'
     },
     {
       name: '91+ días',
-      cantidad: 8,
-      monto: 32000,
+      cantidad: 0,
+      monto: 0,
       color: '#DC2626'
     }
   ];
 
-  const chartData = data.length > 0 ? data : defaultData;
+  // Transformar datos de cobranzas al formato esperado por el gráfico
+  const transformData = (cobranzasData) => {
+    if (!cobranzasData || cobranzasData.length === 0) {
+      return defaultData;
+    }
+
+    const rangos = {
+      '0-30 días': { cantidad: 0, monto: 0, color: '#10B981' },
+      '31-60 días': { cantidad: 0, monto: 0, color: '#F59E0B' },
+      '61-90 días': { cantidad: 0, monto: 0, color: '#EF4444' },
+      '91+ días': { cantidad: 0, monto: 0, color: '#DC2626' }
+    };
+
+    cobranzasData.forEach(cliente => {
+      const diasMora = parseInt(cliente.diasMora) || 0;
+      const monto = parseFloat(cliente.monto) || 0;
+
+      if (diasMora <= 30) {
+        rangos['0-30 días'].cantidad++;
+        rangos['0-30 días'].monto += monto;
+      } else if (diasMora <= 60) {
+        rangos['31-60 días'].cantidad++;
+        rangos['31-60 días'].monto += monto;
+      } else if (diasMora <= 90) {
+        rangos['61-90 días'].cantidad++;
+        rangos['61-90 días'].monto += monto;
+      } else {
+        rangos['91+ días'].cantidad++;
+        rangos['91+ días'].monto += monto;
+      }
+    });
+
+    return Object.entries(rangos).map(([name, data]) => ({
+      name,
+      cantidad: data.cantidad,
+      monto: data.monto,
+      color: data.color
+    }));
+  };
+
+  const chartData = transformData(data);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
+      const clientes = parseInt(payload[0]?.value) || 0;
+      const monto = parseFloat(payload[1]?.value) || 0;
+      
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <p className="font-medium text-gray-900">{label}</p>
           <p className="text-sm text-gray-600">
-            <span className="font-medium">Clientes:</span> {payload[0]?.value || 0}
+            <span className="font-medium">Clientes:</span> {clientes}
           </p>
           <p className="text-sm text-gray-600">
-            <span className="font-medium">Monto:</span> ${(payload[1]?.value || 0).toLocaleString()}
+            <span className="font-medium">Monto:</span> ${monto.toLocaleString()}
           </p>
         </div>
       );
@@ -54,7 +97,7 @@ const MoraSegmentationChart = ({ data = [] }) => {
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium text-gray-900">Segmentación de Mora por Días</h3>
         <div className="text-sm text-gray-500">
-          Total: {chartData.reduce((sum, item) => sum + item.cantidad, 0)} clientes
+          Total: {chartData.reduce((sum, item) => sum + (parseInt(item.cantidad) || 0), 0)} clientes
         </div>
       </div>
       
@@ -99,7 +142,7 @@ const MoraSegmentationChart = ({ data = [] }) => {
             ></div>
             <div className="text-sm">
               <div className="font-medium text-gray-900">{item.name}</div>
-              <div className="text-gray-600">{item.cantidad} clientes</div>
+              <div className="text-gray-600">{parseInt(item.cantidad) || 0} clientes</div>
             </div>
           </div>
         ))}

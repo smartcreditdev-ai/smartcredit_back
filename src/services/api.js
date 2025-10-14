@@ -8,21 +8,27 @@ export const getDashboardStats = async () => {
     // Obtener créditos activos
     const { data: creditosActivos, error: errorCreditos } = await supabase
       .from('aplicaciones')
-      .select('id, monto, estado')
+      .select('id, monto_solicitado, estado')
       .eq('estado', 'Aprobado')
 
     if (errorCreditos) throw errorCreditos
 
     // Obtener cartera total
-    const carteraTotal = creditosActivos?.reduce((sum, credito) => sum + parseFloat(credito.monto), 0) || 0
+    const carteraTotal = creditosActivos?.reduce((sum, credito) => sum + parseFloat(credito.monto_solicitado), 0) || 0
 
     // Obtener clientes en mora
     const { data: clientesMora, error: errorMora } = await supabase
       .from('cobranzas')
-      .select('id, estado')
+      .select('id, monto, estado')
       .eq('estado', 'En mora')
 
     if (errorMora) throw errorMora
+
+    // Calcular monto en mora
+    const montoEnMora = clientesMora?.reduce((sum, cliente) => sum + parseFloat(cliente.monto), 0) || 0
+
+    // Calcular porcentaje de mora real
+    const porcentajeMora = carteraTotal > 0 ? ((montoEnMora / carteraTotal) * 100).toFixed(1) : 0
 
     // Obtener usuarios activos
     const { data: usuarios, error: errorUsuarios } = await supabase
@@ -31,11 +37,59 @@ export const getDashboardStats = async () => {
 
     if (errorUsuarios) throw errorUsuarios
 
+    // Obtener solicitudes pendientes
+    const { data: solicitudesPendientes, error: errorPendientes } = await supabase
+      .from('aplicaciones')
+      .select('id, estado')
+      .eq('estado', 'Pendiente')
+
+    if (errorPendientes) throw errorPendientes
+
+    // Obtener solicitudes aprobadas este mes
+    const inicioMes = new Date();
+    inicioMes.setDate(1);
+    inicioMes.setHours(0, 0, 0, 0);
+
+    const { data: solicitudesAprobadasMes, error: errorAprobadas } = await supabase
+      .from('aplicaciones')
+      .select('id, fecha_aprobacion, estado')
+      .eq('estado', 'Aprobado')
+      .gte('fecha_aprobacion', inicioMes.toISOString())
+
+    if (errorAprobadas) throw errorAprobadas
+
+    // Obtener datos del mes anterior para comparación
+    const finMesAnterior = new Date(inicioMes);
+    finMesAnterior.setDate(0); // Último día del mes anterior
+    const inicioMesAnterior = new Date(finMesAnterior);
+    inicioMesAnterior.setDate(1); // Primer día del mes anterior
+
+    const { data: solicitudesAprobadasMesAnterior, error: errorAprobadasAnterior } = await supabase
+      .from('aplicaciones')
+      .select('id, fecha_aprobacion, estado')
+      .eq('estado', 'Aprobado')
+      .gte('fecha_aprobacion', inicioMesAnterior.toISOString())
+      .lte('fecha_aprobacion', finMesAnterior.toISOString())
+
+    if (errorAprobadasAnterior) throw errorAprobadasAnterior
+
+    // Calcular cambios
+    const aprobadasAnterior = solicitudesAprobadasMesAnterior?.length || 0;
+    const aprobadasActual = solicitudesAprobadasMes?.length || 0;
+    const cambioAprobadas = aprobadasAnterior > 0 ? 
+      (((aprobadasActual - aprobadasAnterior) / aprobadasAnterior) * 100).toFixed(1) : 0;
+
     return {
       creditosActivos: creditosActivos?.length || 0,
       carteraTotal: carteraTotal,
-      porcentajeMora: clientesMora?.length || 0,
-      promotoresActivos: usuarios?.length || 0
+      porcentajeMora: parseFloat(porcentajeMora),
+      promotoresActivos: usuarios?.length || 0,
+      clientesEnMora: clientesMora?.length || 0,
+      montoEnMora: montoEnMora,
+      solicitudesPendientes: solicitudesPendientes?.length || 0,
+      solicitudesAprobadasMes: solicitudesAprobadasMes?.length || 0,
+      cambioAprobadas: parseFloat(cambioAprobadas),
+      aprobadasMesAnterior: aprobadasAnterior
     }
   } catch (error) {
     console.error('Error obteniendo estadísticas del dashboard:', error)
@@ -43,7 +97,13 @@ export const getDashboardStats = async () => {
       creditosActivos: 0,
       carteraTotal: 0,
       porcentajeMora: 0,
-      promotoresActivos: 0
+      promotoresActivos: 0,
+      clientesEnMora: 0,
+      montoEnMora: 0,
+      solicitudesPendientes: 0,
+      solicitudesAprobadasMes: 0,
+      cambioAprobadas: 0,
+      aprobadasMesAnterior: 0
     }
   }
 }
@@ -105,7 +165,7 @@ export const getDistribucionCartera = async () => {
   try {
     const { data, error } = await supabase
       .from('aplicaciones')
-      .select('proposito, monto')
+      .select('proposito, monto_solicitado')
       .eq('estado', 'Aprobado')
 
     if (error) throw error
@@ -114,7 +174,7 @@ export const getDistribucionCartera = async () => {
     const distribucion = {}
     data?.forEach(aplicacion => {
       const proposito = aplicacion.proposito || 'Sin especificar'
-      const monto = parseFloat(aplicacion.monto) || 0
+      const monto = parseFloat(aplicacion.monto_solicitado) || 0
 
       if (distribucion[proposito]) {
         distribucion[proposito] += monto
@@ -215,7 +275,7 @@ export const getTendenciaCartera = async () => {
   try {
     const { data, error } = await supabase
       .from('aplicaciones')
-      .select('fecha_aprobacion, monto, estado')
+      .select('fecha_aprobacion, monto_solicitado, estado')
       .eq('estado', 'Aprobado')
       .gte('fecha_aprobacion', new Date(Date.now() - 6 * 30 * 24 * 60 * 60 * 1000).toISOString())
 
@@ -226,7 +286,7 @@ export const getTendenciaCartera = async () => {
     data?.forEach(aplicacion => {
       const fecha = new Date(aplicacion.fecha_aprobacion)
       const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`
-      const monto = parseFloat(aplicacion.monto) || 0
+      const monto = parseFloat(aplicacion.monto_solicitado) || 0
 
       if (meses[mes]) {
         meses[mes] += monto
@@ -252,48 +312,42 @@ export const getClientesEnMora = async () => {
   try {
     const { data, error } = await supabase
       .from('cobranzas')
-      .select(`
-        id,
-        cliente_id,
-        aplicacion_id,
-        fecha_pago,
-        monto,
-        estado,
-        observaciones,
-        clientes (
-          id,
-          nombre,
-          apellido,
-          telefono,
-          email,
-          direccion
-        ),
-        aplicaciones (
-          id,
-          monto,
-          plazo_meses
-        )
-      `)
+      .select('*')
       .eq('estado', 'En mora')
 
     if (error) throw error
 
     return data?.map(cobranza => {
-      // Calcular días de mora
-      const fechaVencimiento = new Date(cobranza.fecha_pago)
-      const hoy = new Date()
-      const diasMora = Math.max(0, Math.floor((hoy - fechaVencimiento) / (1000 * 60 * 60 * 24)))
+      // Calcular días de mora usando el campo dias_mora de la tabla o calculando desde fecha_vencimiento
+      let diasMora = cobranza.dias_mora || 0;
+      
+      // Si no hay dias_mora en la tabla, calcular desde fecha_vencimiento
+      if (!diasMora && cobranza.fecha_vencimiento) {
+        const fechaVencimiento = new Date(cobranza.fecha_vencimiento)
+        const hoy = new Date()
+        diasMora = Math.max(0, Math.floor((hoy - fechaVencimiento) / (1000 * 60 * 60 * 24)))
+      }
       
       return {
         id: cobranza.id,
-        cliente: `${cobranza.clientes?.nombre || ''} ${cobranza.clientes?.apellido || ''}`.trim() || 'Cliente sin nombre',
-        telefono: cobranza.clientes?.telefono || 'Sin teléfono',
-        email: cobranza.clientes?.email || 'Sin email',
-        direccion: cobranza.clientes?.direccion || 'Sin dirección',
+        cliente: `Cliente ${cobranza.cliente_id?.slice(0, 8) || 'Sin ID'}`, // Usar ID del cliente como referencia
+        telefono: 'Sin teléfono', // No disponible en tabla cobranzas
+        email: 'Sin email', // No disponible en tabla cobranzas
+        direccion: 'Sin dirección', // No disponible en tabla cobranzas
         monto: parseFloat(cobranza.monto) || 0,
+        montoCapital: parseFloat(cobranza.monto_capital) || 0,
+        montoInteres: parseFloat(cobranza.monto_interes) || 0,
+        montoMora: parseFloat(cobranza.monto_mora) || 0,
         diasMora: diasMora,
-        fechaVencimiento: cobranza.fecha_pago,
-        observaciones: cobranza.observaciones || 'Sin observaciones'
+        fechaVencimiento: cobranza.fecha_vencimiento,
+        fechaPago: cobranza.fecha_pago,
+        observaciones: cobranza.observaciones || 'Sin observaciones',
+        tipoPago: cobranza.tipo_de_pago || 'Sin especificar',
+        resultadoContacto: cobranza.resultado_contacto || 'Sin contacto',
+        metodoContacto: cobranza.metodo_contacto || 'Sin método',
+        clienteId: cobranza.cliente_id,
+        aplicacionId: cobranza.aplicacion_id,
+        usuarioCobradorId: cobranza.usuario_cobrador_id
       }
     }) || []
   } catch (error) {
@@ -324,25 +378,46 @@ export const getAplicaciones = async () => {
   try {
     const { data, error } = await supabase
       .from('aplicaciones')
-      .select(`
-        *,
-        clientes (
-          id,
-          nombre,
-          apellido,
-          telefono,
-          email
-        )
-      `)
+      .select('*')
       .order('fecha_solicitud', { ascending: false })
 
     if (error) throw error
 
     return data?.map(aplicacion => ({
       ...aplicacion,
-      cliente: `${aplicacion.clientes?.nombre} ${aplicacion.clientes?.apellido}`,
-      telefono: aplicacion.clientes?.telefono,
-      email: aplicacion.clientes?.email
+      // Mapear campos correctos de la tabla aplicaciones
+      cliente: `${aplicacion.nombres || ''} ${aplicacion.apellidos || ''}`.trim() || 'Cliente sin nombre',
+      montoSolicitado: parseFloat(aplicacion.monto_solicitado) || 0,
+      producto: aplicacion.proposito || 'Sin especificar',
+      plazo: aplicacion.plazo_deseado || aplicacion.plazo_meses || 0,
+      cuotaMensual: parseFloat(aplicacion.cuota_mensual) || 0,
+      fechaSolicitud: aplicacion.fecha_solicitud,
+      documento: aplicacion.dni || 'Sin documento',
+      telefono: aplicacion.telefono || 'Sin teléfono',
+      email: aplicacion.email || 'Sin email',
+      direccion: aplicacion.direccion || 'Sin dirección',
+      empresa: aplicacion.empresa || 'Sin empresa',
+      cargo: aplicacion.cargo || 'Sin cargo',
+      ingresosMensuales: parseFloat(aplicacion.ingresos_mensuales) || 0,
+      otrosIngresos: parseFloat(aplicacion.otros_ingresos) || 0,
+      aniosEnEmpresa: aplicacion.anios_en_empresa || 0,
+      tasaInteres: parseFloat(aplicacion.tasa_interes) || 0,
+      fechaAprobacion: aplicacion.fecha_aprobacion,
+      fechaRechazo: aplicacion.fecha_rechazo,
+      motivoRechazo: aplicacion.motivo_rechazo,
+      observaciones: aplicacion.observaciones,
+      diasMora: aplicacion.dias_mora || 0,
+      // Referencias personales
+      ref1Nombre: aplicacion.personal_ref1_nombre,
+      ref1Telefono: aplicacion.personal_ref1_telefono,
+      ref1Relacion: aplicacion.personal_ref1_relacion,
+      ref2Nombre: aplicacion.personal_ref2_nombre,
+      ref2Telefono: aplicacion.personal_ref2_telefono,
+      // Documentos
+      documentoAdjunto: aplicacion.documento,
+      comprobanteIngresos: aplicacion.comprobante_ingresos,
+      // Ubicación
+      ubicacion: aplicacion.ubicacion
     })) || []
   } catch (error) {
     console.error('Error obteniendo aplicaciones:', error)
@@ -355,27 +430,46 @@ export const getExpedientes = async () => {
   try {
     const { data, error } = await supabase
       .from('aplicaciones')
-      .select(`
-        *,
-        clientes (
-          id,
-          nombre,
-          apellido,
-          dni,
-          telefono,
-          email
-        )
-      `)
+      .select('*')
       .order('fecha_solicitud', { ascending: false })
 
     if (error) throw error
 
     return data?.map(aplicacion => ({
       ...aplicacion,
-      cliente: `${aplicacion.clientes?.nombre} ${aplicacion.clientes?.apellido}`,
-      dni: aplicacion.clientes?.dni,
-      telefono: aplicacion.clientes?.telefono,
-      email: aplicacion.clientes?.email
+      // Mapear campos correctos de la tabla aplicaciones
+      cliente: `${aplicacion.nombres || ''} ${aplicacion.apellidos || ''}`.trim() || 'Cliente sin nombre',
+      dni: aplicacion.dni || 'Sin documento',
+      telefono: aplicacion.telefono || 'Sin teléfono',
+      email: aplicacion.email || 'Sin email',
+      direccion: aplicacion.direccion || 'Sin dirección',
+      empresa: aplicacion.empresa || 'Sin empresa',
+      cargo: aplicacion.cargo || 'Sin cargo',
+      montoSolicitado: parseFloat(aplicacion.monto_solicitado) || 0,
+      producto: aplicacion.proposito || 'Sin especificar',
+      plazo: aplicacion.plazo_deseado || aplicacion.plazo_meses || 0,
+      cuotaMensual: parseFloat(aplicacion.cuota_mensual) || 0,
+      ingresosMensuales: parseFloat(aplicacion.ingresos_mensuales) || 0,
+      otrosIngresos: parseFloat(aplicacion.otros_ingresos) || 0,
+      aniosEnEmpresa: aplicacion.anios_en_empresa || 0,
+      tasaInteres: parseFloat(aplicacion.tasa_interes) || 0,
+      fechaSolicitud: aplicacion.fecha_solicitud,
+      fechaAprobacion: aplicacion.fecha_aprobacion,
+      fechaRechazo: aplicacion.fecha_rechazo,
+      motivoRechazo: aplicacion.motivo_rechazo,
+      observaciones: aplicacion.observaciones,
+      diasMora: aplicacion.dias_mora || 0,
+      // Referencias personales
+      ref1Nombre: aplicacion.personal_ref1_nombre,
+      ref1Telefono: aplicacion.personal_ref1_telefono,
+      ref1Relacion: aplicacion.personal_ref1_relacion,
+      ref2Nombre: aplicacion.personal_ref2_nombre,
+      ref2Telefono: aplicacion.personal_ref2_telefono,
+      // Documentos
+      documentoAdjunto: aplicacion.documento,
+      comprobanteIngresos: aplicacion.comprobante_ingresos,
+      // Ubicación
+      ubicacion: aplicacion.ubicacion
     })) || []
   } catch (error) {
     console.error('Error obteniendo expedientes:', error)

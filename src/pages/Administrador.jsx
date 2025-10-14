@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Header from '../components/Header';
 import UserModal from '../components/UserModal';
 import FormBuilder from '../components/FormBuilder';
 import { useUsuarios } from '../hooks/useSupabaseData';
@@ -210,12 +209,9 @@ const Administrador = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header title="Administrador" subtitle="Gestión de usuarios, roles y configuraciones" />
-      
-      <div className="ml-64 p-6">
-        {/* Tabs */}
-        <div className="mb-6">
+    <div className="space-y-6">
+      {/* Tabs */}
+      <div className="mb-6">
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex space-x-8">
               {tabs.map((tab) => {
@@ -269,22 +265,22 @@ const Administrador = () => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {t('common.formularios.nombre')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {t('common.formularios.rol')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {t('common.formularios.sucursal')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {t('common.formularios.estado')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Último Acceso
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Acciones
                         </th>
                       </tr>
@@ -292,47 +288,56 @@ const Administrador = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {users.map((user) => (
                         <tr key={user.id}>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-4 py-4 whitespace-nowrap">
                             <div>
                               <div className="text-sm font-medium text-gray-900">{user.nombre}</div>
                               <div className="text-sm text-gray-500">{user.email}</div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-4 py-4 whitespace-nowrap">
                             <span className={`px-2 py-1 text-xs font-medium rounded-full ${getRoleColor(user.rol)}`}>
                               {user.rol}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                             {user.sucursal}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-4 py-4 whitespace-nowrap">
                             <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(user.estado)}`}>
                               {user.estado}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                             {user.ultimoAcceso}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                            <button
-                              onClick={() => setEditingUser(user)}
-                              className="text-primary-600 hover:text-primary-900"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleToggleUserStatus(user.id)}
-                              className={`${user.estado === 'Activo' ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}`}
-                            >
-                              {user.estado === 'Activo' ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
-                            </button>
-                            <button
-                              onClick={() => handleDeleteUser(user.id)}
-                              className="text-red-600 hover:text-red-900"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => setEditingUser(user)}
+                                className="text-primary-600 hover:text-primary-900 p-1 rounded hover:bg-gray-100"
+                                title="Editar usuario"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleToggleUserStatus(user.id)}
+                                className={`p-1 rounded hover:bg-gray-100 ${
+                                  user.estado === 'Activo' 
+                                    ? 'text-red-600 hover:text-red-900' 
+                                    : 'text-green-600 hover:text-green-900'
+                                }`}
+                                title={user.estado === 'Activo' ? 'Desactivar usuario' : 'Activar usuario'}
+                              >
+                                {user.estado === 'Activo' ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
+                              </button>
+                              <button
+                                onClick={() => handleDeleteUser(user.id)}
+                                className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-gray-100"
+                                title="Eliminar usuario"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -540,32 +545,31 @@ const Administrador = () => {
             </div>
           )}
         </div>
+
+        {/* Modal de Usuario */}
+        {showUserModal && (
+          <UserModal
+            user={editingUser}
+            onSave={handleSaveUser}
+            onClose={() => {
+              setShowUserModal(false);
+              setEditingUser(null);
+            }}
+          />
+        )}
+
+        {/* Modal de Constructor de Formularios */}
+        {showFormBuilder && (
+          <FormBuilder
+            form={editingForm}
+            onSave={handleSaveForm}
+            onClose={() => {
+              setShowFormBuilder(false);
+              setEditingForm(null);
+            }}
+          />
+        )}
       </div>
-
-      {/* Modal de Usuario */}
-      {showUserModal && (
-        <UserModal
-          user={editingUser}
-          onSave={handleSaveUser}
-          onClose={() => {
-            setShowUserModal(false);
-            setEditingUser(null);
-          }}
-        />
-      )}
-
-      {/* Modal de Constructor de Formularios */}
-      {showFormBuilder && (
-        <FormBuilder
-          form={editingForm}
-          onSave={handleSaveForm}
-          onClose={() => {
-            setShowFormBuilder(false);
-            setEditingForm(null);
-          }}
-        />
-      )}
-    </div>
   );
 };
 

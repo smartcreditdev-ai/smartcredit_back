@@ -61,11 +61,6 @@ const CreditRenewal = () => {
 
   const columns = [
     {
-      key: 'id',
-      header: 'ID',
-      render: (value) => <span className="font-mono text-sm">#{value}</span>
-    },
-    {
       key: 'cliente',
       header: 'Cliente',
       render: (value, row) => (

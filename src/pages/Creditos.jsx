@@ -8,7 +8,7 @@ import ProspectForm from '../components/ProspectForm';
 import ProspectsTable from '../components/ProspectsTable';
 import AssignPromoterModal from '../components/AssignPromoterModal';
 import CreditStatsOverview from '../components/CreditStatsOverview';
-import { useAplicaciones } from '../hooks/useSupabaseData';
+import { useAplicaciones, useClientesEnMora } from '../hooks/useSupabaseData';
 import { FileText, CheckCircle, DollarSign, RefreshCw, Users, UserPlus, Loader2 } from 'lucide-react';
 
 const Creditos = () => {
@@ -22,6 +22,9 @@ const Creditos = () => {
   
   // Obtener datos reales de aplicaciones
   const { aplicaciones, loading: aplicacionesLoading, error: aplicacionesError } = useAplicaciones();
+  
+  // Obtener datos de clientes en mora para cálculos
+  const { clientes: clientesEnMora } = useClientesEnMora();
 
   // Datos de prospectos
   const [prospects, setProspects] = useState([
@@ -194,14 +197,21 @@ const Creditos = () => {
 
       {/* Estadísticas Generales */}
       <CreditStatsOverview
-        totalClients={aplicaciones?.length + prospects.length + 200 || 0} // Clientes totales estimados
-        totalPortfolio={aplicaciones?.reduce((sum, app) => sum + (parseFloat(app.monto) || 0), 0) + 2000000 || 0} // Cartera total estimada
-        activeCredits={aplicaciones?.filter(app => app.estado === 'Aprobado').length + 100 || 0} // Créditos activos estimados
+        totalClients={aplicaciones?.length || 0} // Solo clientes reales
+        totalPortfolio={aplicaciones?.reduce((sum, app) => sum + (parseFloat(app.monto) || 0), 0) || 0} // Solo cartera real
+        activeCredits={aplicaciones?.filter(app => app.estado === 'Aprobado').length || 0} // Solo créditos reales
         pendingApplications={aplicaciones?.filter(app => app.estado === 'Pendiente' || app.estado === 'En revisión').length || 0}
-        overdueCredits={5} // En mora estimados
-        approvedThisMonth={aplicaciones?.filter(app => app.estado === 'Aprobado').length || 0}
+        overdueCredits={clientesEnMora?.length || 0} // En mora reales
+        approvedThisMonth={aplicaciones?.filter(app => {
+          const fecha = new Date(app.fecha_aprobacion);
+          const now = new Date();
+          const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          return app.estado === 'Aprobado' && fecha >= lastMonth;
+        }).length || 0}
         prospects={prospects.length}
-        renewalsPending={3} // Renovaciones pendientes estimadas
+        renewalsPending={0} // Sin renovaciones por ahora
+        aplicaciones={aplicaciones || []} // Datos reales para cálculos
+        clientesEnMora={clientesEnMora || []} // Datos reales de mora
       />
 
       {/* Tab Content */}

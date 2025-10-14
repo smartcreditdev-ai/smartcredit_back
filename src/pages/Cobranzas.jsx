@@ -29,8 +29,9 @@ const Cobranzas = () => {
   // Calcular estadísticas basadas en datos reales
   const stats = React.useMemo(() => {
     const carteraEnMora = clientes?.reduce((sum, cliente) => sum + (parseFloat(cliente.monto) || 0), 0) || 0;
+    const montoMoraTotal = clientes?.reduce((sum, cliente) => sum + (parseFloat(cliente.montoMora) || 0), 0) || 0;
     const clientesEnMora = clientes?.length || 0;
-    const porcentajeMora = clientesEnMora > 0 ? ((clientesEnMora / 100) * 100).toFixed(1) : 0; // Estimado
+    const clientesCriticos = clientes?.filter(cliente => (cliente.diasMora || 0) > 60).length || 0;
     
     return [
       {
@@ -48,18 +49,18 @@ const Cobranzas = () => {
         color: 'red'
       },
       {
-        title: '% Mora',
-        value: `${porcentajeMora}%`,
-        change: '-0.5%',
+        title: 'Monto por Mora',
+        value: `$${montoMoraTotal.toLocaleString()}`,
+        change: '+2%',
         icon: TrendingDown,
-        color: 'green'
+        color: 'orange'
       },
       {
-        title: 'Planes de Pago Activos',
-        value: '12', // Mantener como estimado por ahora
-        change: '+2',
+        title: 'Clientes Críticos',
+        value: clientesCriticos.toString(),
+        change: '+1',
         icon: FileText,
-        color: 'blue'
+        color: 'red'
       }
     ];
   }, [clientes]);
@@ -67,39 +68,68 @@ const Cobranzas = () => {
   const columns = [
     {
       key: 'cliente',
-      header: 'Cliente'
+      header: 'Cliente',
+      render: (value) => (
+        <div className="font-medium text-gray-900">{value}</div>
+      )
     },
     {
       key: 'monto',
-      header: 'Monto',
-      render: (value) => <span className="font-semibold">${value.toLocaleString()}</span>
-    },
-    {
-      key: 'diasMora',
-      header: 'Días Mora',
+      header: 'Monto Total',
       render: (value) => (
-        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-          value <= 30 ? 'bg-yellow-100 text-yellow-800' :
-          value <= 60 ? 'bg-orange-100 text-orange-800' :
-          'bg-red-100 text-red-800'
-        }`}>
-          {value} días
+        <span className="font-semibold text-red-600">
+          ${(value || 0).toLocaleString()}
         </span>
       )
     },
     {
-      key: 'estado',
-      header: 'Estado',
+      key: 'montoMora',
+      header: 'Monto Mora',
+      render: (value) => (
+        <span className="font-semibold text-orange-600">
+          ${(value || 0).toLocaleString()}
+        </span>
+      )
+    },
+    {
+      key: 'diasMora',
+      header: 'Días Mora',
       render: (value) => {
-        const statusColors = {
-          'En seguimiento': 'bg-blue-100 text-blue-800',
-          'Crítico': 'bg-red-100 text-red-800',
-          'En riesgo': 'bg-orange-100 text-orange-800',
-          'Pago hoy': 'bg-green-100 text-green-800'
+        const dias = value || 0;
+        return (
+          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+            dias <= 30 ? 'bg-yellow-100 text-yellow-800' :
+            dias <= 60 ? 'bg-orange-100 text-orange-800' :
+            'bg-red-100 text-red-800'
+          }`}>
+            {dias} días
+          </span>
+        );
+      }
+    },
+    {
+      key: 'fechaVencimiento',
+      header: 'Fecha Vencimiento',
+      render: (value) => (
+        <span className="text-sm text-gray-600">
+          {value ? new Date(value).toLocaleDateString('es-ES') : 'Sin fecha'}
+        </span>
+      )
+    },
+    {
+      key: 'resultadoContacto',
+      header: 'Último Contacto',
+      render: (value) => {
+        const contactColors = {
+          'Sin contacto': 'bg-gray-100 text-gray-800',
+          'Contactado': 'bg-blue-100 text-blue-800',
+          'No contesta': 'bg-red-100 text-red-800',
+          'Promesa de pago': 'bg-green-100 text-green-800',
+          'Rechaza pago': 'bg-red-100 text-red-800'
         };
         return (
-          <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusColors[value] || 'bg-gray-100 text-gray-800'}`}>
-            {value}
+          <span className={`px-2 py-1 text-xs font-medium rounded-full ${contactColors[value] || 'bg-gray-100 text-gray-800'}`}>
+            {value || 'Sin contacto'}
           </span>
         );
       }
@@ -113,14 +143,23 @@ const Cobranzas = () => {
     return clientes.map(cliente => ({
       cliente: cliente.cliente || 'Cliente sin nombre',
       monto: parseFloat(cliente.monto) || 0,
-      diasMora: cliente.diasMora || 0,
-      estado: cliente.diasMora > 60 ? 'Crítico' : 
-              cliente.diasMora > 30 ? 'En seguimiento' : 
-              cliente.diasMora > 0 ? 'En riesgo' : 'Pago hoy',
+      montoCapital: parseFloat(cliente.montoCapital) || 0,
+      montoInteres: parseFloat(cliente.montoInteres) || 0,
+      montoMora: parseFloat(cliente.montoMora) || 0,
+      diasMora: parseInt(cliente.diasMora) || 0,
+      fechaVencimiento: cliente.fechaVencimiento,
+      fechaPago: cliente.fechaPago,
+      resultadoContacto: cliente.resultadoContacto || 'Sin contacto',
+      metodoContacto: cliente.metodoContacto || 'Sin método',
+      tipoPago: cliente.tipoPago || 'Sin especificar',
+      observaciones: cliente.observaciones || 'Sin observaciones',
+      clienteId: cliente.clienteId,
+      aplicacionId: cliente.aplicacionId,
+      usuarioCobradorId: cliente.usuarioCobradorId,
+      // Campos adicionales para compatibilidad
       telefono: cliente.telefono,
       email: cliente.email,
-      direccion: cliente.direccion,
-      observaciones: cliente.observaciones
+      direccion: cliente.direccion
     }));
   }, [clientes]);
 
