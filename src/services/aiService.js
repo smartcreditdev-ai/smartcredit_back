@@ -7,7 +7,7 @@ export const generateAISummary = async (dashboardData, summaryType = 'executive'
   try {
     console.log('🤖 Iniciando generación de resumen con IA...');
     console.log('📊 Datos del dashboard:', dashboardData);
-    console.log('📝 Tipo de resumen:', summaryType);
+    console.log('📝 Resumen:', summaryType);
 
     // Preparar el prompt según el tipo de resumen
     const prompt = buildPrompt(dashboardData, summaryType);
