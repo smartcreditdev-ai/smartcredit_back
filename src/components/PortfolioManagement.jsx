@@ -514,7 +514,7 @@ const PortfolioManagement = () => {
                             {credito.cliente}
                           </div>
                           <div className="text-sm text-gray-500">
-                            DNI: {credito.dni}
+                          Identificación: {credito.dni}
                           </div>
                           <div className="text-sm text-gray-500">
                             {credito.telefono}
@@ -754,7 +754,24 @@ const PagoModal = ({ credito, onSave, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await onSave(formData);
+      // Preparar datos según el tipo de pago
+      let datosParaEnviar = { ...formData };
+      
+      if (formData.tipo_de_pago === 'promesa') {
+        // Para promesa de pago, establecer estado y tipo_de_pago específicos
+        datosParaEnviar.estado = 'PROMESA_PAGO';
+        datosParaEnviar.tipo_de_pago = 'Promesa de pago';
+      } else {
+        // Para otros tipos de pago, mantener el comportamiento actual
+        datosParaEnviar.estado = 'confirmado';
+        if (formData.tipo_de_pago === 'total') {
+          datosParaEnviar.tipo_de_pago = 'Pago Total (Cuota Completa)';
+        } else if (formData.tipo_de_pago === 'parcial') {
+          datosParaEnviar.tipo_de_pago = 'Pago Parcial';
+        }
+      }
+      
+      await onSave(datosParaEnviar);
     } catch (error) {
       console.error('Error guardando pago:', error);
     }
@@ -816,6 +833,7 @@ const PagoModal = ({ credito, onSave, onClose }) => {
               >
                 <option value="total">Pago Total (Cuota Completa)</option>
                 <option value="parcial">Pago Parcial</option>
+                <option value="promesa">Promesa de Pago</option>
               </select>
             </div>
 

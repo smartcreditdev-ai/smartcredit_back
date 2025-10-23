@@ -29,9 +29,9 @@ const Sidebar = ({ isOpen = false, onClose }) => {
     { path: '/simulador', label: t('navigation.simulador'), icon: Calculator, enabled: true },
     { path: '/productos', label: t('navigation.productos'), icon: Package, enabled: true },
     { path: '/cobranzas', label: t('navigation.cobranzas'), icon: DollarSign, enabled: true },
-    { path: '/expedientes', label: t('navigation.expedientes'), icon: FolderOpen, enabled: false },
-    { path: '/reportes', label: t('navigation.reportes'), icon: BarChart3, enabled: false },
-    { path: '/integraciones', label: t('navigation.integraciones'), icon: Plug, enabled: false },
+    { path: '/expedientes', label: t('navigation.expedientes'), icon: FolderOpen, enabled: true },
+    { path: '/reportes', label: t('navigation.reportes'), icon: BarChart3, enabled: true },
+    { path: '/integraciones', label: t('navigation.integraciones'), icon: Plug, enabled: true },
     { path: '/administrador', label: t('navigation.administrador'), icon: Shield, enabled: true },
     { path: '/soporte', label: t('navigation.soporte'), icon: HeadphonesIcon, enabled: true },
   ];

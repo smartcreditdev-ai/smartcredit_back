@@ -10,7 +10,7 @@ const CreditApplicationsTable = ({ applications, onApprove, onReject, onEdit }) 
       render: (value, row) => (
         <div>
           <div className="font-medium text-gray-900">{row.nombres} {row.apellidos}</div>
-          <div className="text-sm text-gray-500">DNI: {row.dni}</div>
+          <div className="text-sm text-gray-500">Identificación: {row.dni}</div>
           <div className="text-sm text-gray-500">{row.email}</div>
         </div>
       )

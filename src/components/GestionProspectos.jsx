@@ -304,7 +304,7 @@ const GestionProspectos = () => {
                             {prospecto.nombre} {prospecto.apellido}
                           </div>
                           <div className="text-sm text-gray-500">
-                            DNI: {prospecto.dni}
+                          Identificación: {prospecto.dni}
                           </div>
                         </div>
                       </div>
@@ -427,7 +427,7 @@ const GestionProspectos = () => {
                       <p className="text-gray-900">{viewingProspecto.nombre} {viewingProspecto.apellido}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-600">DNI</label>
+                      <label className="text-sm font-medium text-gray-600">Identificación</label>
                       <p className="text-gray-900">{viewingProspecto.dni}</p>
                     </div>
                     <div>

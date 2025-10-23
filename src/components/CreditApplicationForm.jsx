@@ -7,13 +7,54 @@ const CreditApplicationForm = ({ isOpen, onClose, onSubmit, prospect = null, edi
     cliente_id: prospect ? prospect.id : '',
     monto_solicitado: prospect ? prospect.montoSolicitado : '',
     plazo_deseado: '',
-    proposito: '',
-    ingresos_mensuales: '',
+    tipo_producto: '',
+    
+    // Fuente de Ingresos
+    tipo_ingresos: '',
+    
+    // Empleo
     empresa: '',
     cargo: '',
     telefono_empresa: '',
     anios_en_empresa: '',
-    otros_ingresos: '',
+    ingresos_mensuales: '',
+    
+    // Negocio Propio
+    actividad_economica: '',
+    antiguedad_negocio: '',
+    descripcion_negocio: '',
+    ingresos_mensuales_negocio: '',
+    
+    // Remesas
+    ingresos_promedio_remesas: '',
+    
+    // Otros
+    otros_ingresos_especificar: '',
+    otros_ingresos_promedio: '',
+    
+    // Estado Financiero
+    activos_caja_bancos: '',
+    activos_inventario: '',
+    activos_mobiliario: '',
+    activos_total: '',
+    pasivo_deudas_largo_plazo: '',
+    pasivo_deudas_corto_plazo: '',
+    patrimonio_capital: '',
+    patrimonio_utilidades: '',
+    ingresos_ventas: '',
+    ingresos_extraordinario: '',
+    gastos_compras: '',
+    gastos_alquiler: '',
+    gastos_alimentacion: '',
+    gastos_otros: '',
+    
+    // Condiciones del Crédito
+    plazo: '',
+    tasa_interes: '',
+    tipo_garantia: '',
+    valor_garantia: '',
+    
+    // Referencias
     personal_ref1_nombre: '',
     personal_ref1_telefono: '',
     personal_ref1_relacion: '',
@@ -52,13 +93,38 @@ const CreditApplicationForm = ({ isOpen, onClose, onSubmit, prospect = null, edi
         cliente_id: editData.cliente_id || '',
         monto_solicitado: editData.monto_solicitado || '',
         plazo_deseado: editData.plazo_deseado || '',
-        proposito: editData.proposito || '',
-        ingresos_mensuales: editData.ingresos_mensuales || '',
+        tipo_producto: editData.tipo_producto || '',
+        tipo_ingresos: editData.tipo_ingresos || '',
         empresa: editData.empresa || '',
         cargo: editData.cargo || '',
         telefono_empresa: editData.telefono_empresa || '',
         anios_en_empresa: editData.anios_en_empresa || '',
-        otros_ingresos: editData.otros_ingresos || '',
+        ingresos_mensuales: editData.ingresos_mensuales || '',
+        actividad_economica: editData.actividad_economica || '',
+        antiguedad_negocio: editData.antiguedad_negocio || '',
+        descripcion_negocio: editData.descripcion_negocio || '',
+        ingresos_mensuales_negocio: editData.ingresos_mensuales_negocio || '',
+        ingresos_promedio_remesas: editData.ingresos_promedio_remesas || '',
+        otros_ingresos_especificar: editData.otros_ingresos_especificar || '',
+        otros_ingresos_promedio: editData.otros_ingresos_promedio || '',
+        activos_caja_bancos: editData.activos_caja_bancos || '',
+        activos_inventario: editData.activos_inventario || '',
+        activos_mobiliario: editData.activos_mobiliario || '',
+        activos_total: editData.activos_total || '',
+        pasivo_deudas_largo_plazo: editData.pasivo_deudas_largo_plazo || '',
+        pasivo_deudas_corto_plazo: editData.pasivo_deudas_corto_plazo || '',
+        patrimonio_capital: editData.patrimonio_capital || '',
+        patrimonio_utilidades: editData.patrimonio_utilidades || '',
+        ingresos_ventas: editData.ingresos_ventas || '',
+        ingresos_extraordinario: editData.ingresos_extraordinario || '',
+        gastos_compras: editData.gastos_compras || '',
+        gastos_alquiler: editData.gastos_alquiler || '',
+        gastos_alimentacion: editData.gastos_alimentacion || '',
+        gastos_otros: editData.gastos_otros || '',
+        plazo: editData.plazo || '',
+        tasa_interes: editData.tasa_interes || '',
+        tipo_garantia: editData.tipo_garantia || '',
+        valor_garantia: editData.valor_garantia || '',
         personal_ref1_nombre: editData.personal_ref1_nombre || '',
         personal_ref1_telefono: editData.personal_ref1_telefono || '',
         personal_ref1_relacion: editData.personal_ref1_relacion || '',
@@ -78,13 +144,38 @@ const CreditApplicationForm = ({ isOpen, onClose, onSubmit, prospect = null, edi
         cliente_id: '',
         monto_solicitado: '',
         plazo_deseado: '',
-        proposito: '',
-        ingresos_mensuales: '',
+        tipo_producto: '',
+        tipo_ingresos: '',
         empresa: '',
         cargo: '',
         telefono_empresa: '',
         anios_en_empresa: '',
-        otros_ingresos: '',
+        ingresos_mensuales: '',
+        actividad_economica: '',
+        antiguedad_negocio: '',
+        descripcion_negocio: '',
+        ingresos_mensuales_negocio: '',
+        ingresos_promedio_remesas: '',
+        otros_ingresos_especificar: '',
+        otros_ingresos_promedio: '',
+        activos_caja_bancos: '',
+        activos_inventario: '',
+        activos_mobiliario: '',
+        activos_total: '',
+        pasivo_deudas_largo_plazo: '',
+        pasivo_deudas_corto_plazo: '',
+        patrimonio_capital: '',
+        patrimonio_utilidades: '',
+        ingresos_ventas: '',
+        ingresos_extraordinario: '',
+        gastos_compras: '',
+        gastos_alquiler: '',
+        gastos_alimentacion: '',
+        gastos_otros: '',
+        plazo: '',
+        tasa_interes: '',
+        tipo_garantia: '',
+        valor_garantia: '',
         personal_ref1_nombre: '',
         personal_ref1_telefono: '',
         personal_ref1_relacion: '',
@@ -162,13 +253,38 @@ const CreditApplicationForm = ({ isOpen, onClose, onSubmit, prospect = null, edi
             cliente_id: '',
             monto_solicitado: '',
             plazo_deseado: '',
-            proposito: '',
-            ingresos_mensuales: '',
+            tipo_producto: '',
+            tipo_ingresos: '',
             empresa: '',
             cargo: '',
             telefono_empresa: '',
             anios_en_empresa: '',
-            otros_ingresos: '',
+            ingresos_mensuales: '',
+            actividad_economica: '',
+            antiguedad_negocio: '',
+            descripcion_negocio: '',
+            ingresos_mensuales_negocio: '',
+            ingresos_promedio_remesas: '',
+            otros_ingresos_especificar: '',
+            otros_ingresos_promedio: '',
+            activos_caja_bancos: '',
+            activos_inventario: '',
+            activos_mobiliario: '',
+            activos_total: '',
+            pasivo_deudas_largo_plazo: '',
+            pasivo_deudas_corto_plazo: '',
+            patrimonio_capital: '',
+            patrimonio_utilidades: '',
+            ingresos_ventas: '',
+            ingresos_extraordinario: '',
+            gastos_compras: '',
+            gastos_alquiler: '',
+            gastos_alimentacion: '',
+            gastos_otros: '',
+            plazo: '',
+            tasa_interes: '',
+            tipo_garantia: '',
+            valor_garantia: '',
             personal_ref1_nombre: '',
             personal_ref1_telefono: '',
             personal_ref1_relacion: '',
@@ -228,7 +344,7 @@ const CreditApplicationForm = ({ isOpen, onClose, onSubmit, prospect = null, edi
                     <option value="">Seleccionar cliente...</option>
                     {clientes.map(cliente => (
                       <option key={cliente.id} value={cliente.id}>
-                        {cliente.nombre} {cliente.apellido} - DNI: {cliente.dni}
+                        {cliente.nombre} {cliente.apellido} - Identificación: {cliente.dni}
                       </option>
                     ))}
                   </select>
@@ -248,7 +364,7 @@ const CreditApplicationForm = ({ isOpen, onClose, onSubmit, prospect = null, edi
                       <span className="ml-2 text-gray-900">{clienteSeleccionado.nombre} {clienteSeleccionado.apellido}</span>
                     </div>
                     <div>
-                      <span className="font-medium text-gray-600">DNI:</span>
+                      <span className="font-medium text-gray-600">Identificación:</span>
                       <span className="ml-2 text-gray-900">{clienteSeleccionado.dni}</span>
                     </div>
                     <div>
@@ -270,91 +386,243 @@ const CreditApplicationForm = ({ isOpen, onClose, onSubmit, prospect = null, edi
               )}
             </div>
           </div>
-          {/* Información Laboral */}
+          {/* Fuente de Ingresos */}
           <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Información Laboral</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Fuente de Ingresos</h3>
+            <div className="grid grid-cols-1 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Empresa *
+                  Tipo de Ingresos *
                 </label>
-                <input
-                  type="text"
-                  name="empresa"
-                  value={formData.empresa}
+                <select
+                  name="tipo_ingresos"
+                  value={formData.tipo_ingresos}
                   onChange={handleChange}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
+                >
+                  <option value="">Seleccionar tipo de ingresos</option>
+                  <option value="empleo">Empleo</option>
+                  <option value="negocio_propio">Negocio Propio</option>
+                  <option value="remesas">Remesas</option>
+                  <option value="otros">Otros</option>
+                </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Cargo *
-                </label>
-                <input
-                  type="text"
-                  name="cargo"
-                  value={formData.cargo}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Teléfono Empresa
-                </label>
-                <input
-                  type="tel"
-                  name="telefono_empresa"
-                  value={formData.telefono_empresa}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Años en la Empresa
-                </label>
-                <input
-                  type="number"
-                  name="anios_en_empresa"
-                  value={formData.anios_en_empresa}
-                  onChange={handleChange}
-                  min="0"
-                  max="50"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ingresos Mensuales *
-                </label>
-                <input
-                  type="number"
-                  name="ingresos_mensuales"
-                  value={formData.ingresos_mensuales}
-                  onChange={handleChange}
-                  required
-                  min="0"
-                  step="100"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Otros Ingresos
-                </label>
-                <input
-                  type="number"
-                  name="otros_ingresos"
-                  value={formData.otros_ingresos}
-                  onChange={handleChange}
-                  min="0"
-                  step="100"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
-              </div>
+
+              {/* Información Laboral - Solo si selecciona Empleo */}
+              {formData.tipo_ingresos === 'empleo' && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <h4 className="font-medium text-gray-900 mb-3">Información Laboral</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Empresa *
+                      </label>
+                      <input
+                        type="text"
+                        name="empresa"
+                        value={formData.empresa}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Cargo *
+                      </label>
+                      <input
+                        type="text"
+                        name="cargo"
+                        value={formData.cargo}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Teléfono Empresa
+                      </label>
+                      <input
+                        type="tel"
+                        name="telefono_empresa"
+                        value={formData.telefono_empresa}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Años en la Empresa
+                      </label>
+                      <input
+                        type="number"
+                        name="anios_en_empresa"
+                        value={formData.anios_en_empresa}
+                        onChange={handleChange}
+                        min="0"
+                        max="50"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Ingresos Mensuales *
+                      </label>
+                      <input
+                        type="number"
+                        name="ingresos_mensuales"
+                        value={formData.ingresos_mensuales}
+                        onChange={handleChange}
+                        required
+                        min="0"
+                        step="100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Negocio Propio - Solo si selecciona Negocio Propio */}
+              {formData.tipo_ingresos === 'negocio_propio' && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <h4 className="font-medium text-gray-900 mb-3">Información del Negocio</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Actividad Económica *
+                      </label>
+                      <select
+                        name="actividad_economica"
+                        value={formData.actividad_economica}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      >
+                        <option value="">Seleccionar actividad</option>
+                        <option value="agricultura">Agricultura</option>
+                        <option value="ganaderia">Ganadería</option>
+                        <option value="forestal">Forestal</option>
+                        <option value="comercio">Comercio</option>
+                        <option value="construccion">Construcción</option>
+                        <option value="servicios">Servicios (Salud, educación, transporte)</option>
+                        <option value="industria">Industria</option>
+                        <option value="micro_pequena_empresa">Micro y pequeña empresa</option>
+                        <option value="manufactura">Manufactura</option>
+                        <option value="artesania">Artesanía</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Antigüedad del Negocio (años) *
+                      </label>
+                      <input
+                        type="number"
+                        name="antiguedad_negocio"
+                        value={formData.antiguedad_negocio}
+                        onChange={handleChange}
+                        required
+                        min="0"
+                        max="50"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Descripción del Negocio *
+                      </label>
+                      <textarea
+                        name="descripcion_negocio"
+                        value={formData.descripcion_negocio}
+                        onChange={handleChange}
+                        required
+                        rows="3"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder="Describe tu negocio..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Ingresos Mensuales *
+                      </label>
+                      <input
+                        type="number"
+                        name="ingresos_mensuales_negocio"
+                        value={formData.ingresos_mensuales_negocio}
+                        onChange={handleChange}
+                        required
+                        min="0"
+                        step="100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Remesas - Solo si selecciona Remesas */}
+              {formData.tipo_ingresos === 'remesas' && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <h4 className="font-medium text-gray-900 mb-3">Información de Remesas</h4>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Ingresos Promedio Mensual *
+                      </label>
+                      <input
+                        type="number"
+                        name="ingresos_promedio_remesas"
+                        value={formData.ingresos_promedio_remesas}
+                        onChange={handleChange}
+                        required
+                        min="0"
+                        step="100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Otros - Solo si selecciona Otros */}
+              {formData.tipo_ingresos === 'otros' && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <h4 className="font-medium text-gray-900 mb-3">Otros Ingresos</h4>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Especificar Fuente de Ingresos *
+                      </label>
+                      <input
+                        type="text"
+                        name="otros_ingresos_especificar"
+                        value={formData.otros_ingresos_especificar}
+                        onChange={handleChange}
+                        required
+                        placeholder="Especifica la fuente de tus ingresos..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Ingreso Promedio Mensual *
+                      </label>
+                      <input
+                        type="number"
+                        name="otros_ingresos_promedio"
+                        value={formData.otros_ingresos_promedio}
+                        onChange={handleChange}
+                        required
+                        min="0"
+                        step="100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -379,17 +647,27 @@ const CreditApplicationForm = ({ isOpen, onClose, onSubmit, prospect = null, edi
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Propósito *
+                  Tipo de Producto *
                 </label>
-                <input
-                  type="text"
-                  name="proposito"
-                  value={formData.proposito}
+                <select
+                  name="tipo_producto"
+                  value={formData.tipo_producto}
                   onChange={handleChange}
                   required
-                  placeholder="Ej: Compra de vehículo, Mejoras en el hogar, Capital de trabajo"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
+                >
+                  <option value="">Seleccionar tipo de producto</option>
+                  <option value="compra_vehiculo">Compra de Vehículo</option>
+                  <option value="mejoras_hogar">Mejoras en el Hogar</option>
+                  <option value="capital_trabajo">Capital de Trabajo</option>
+                  <option value="consolidacion_deudas">Consolidación de Deudas</option>
+                  <option value="educacion">Educación</option>
+                  <option value="salud">Salud</option>
+                  <option value="negocio">Negocio</option>
+                  <option value="inversion">Inversión</option>
+                  <option value="emergencia">Emergencia</option>
+                  <option value="otros">Otros</option>
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -448,15 +726,18 @@ const CreditApplicationForm = ({ isOpen, onClose, onSubmit, prospect = null, edi
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Referencia 1 - Relación *
                 </label>
-                <input
-                  type="text"
+                <select
                   name="personal_ref1_relacion"
                   value={formData.personal_ref1_relacion}
                   onChange={handleChange}
                   required
-                  placeholder="Ej: Familiar, Amigo, Colega"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
+                >
+                  <option value="">Seleccionar relación</option>
+                  <option value="familiar">Familiar</option>
+                  <option value="amigo">Amigo</option>
+                  <option value="otro">Otro</option>
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -485,13 +766,323 @@ const CreditApplicationForm = ({ isOpen, onClose, onSubmit, prospect = null, edi
             </div>
           </div>
 
-          {/* Información Adicional */}
+          {/* Estado Financiero */}
           <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Información Adicional</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Estado Financiero</h3>
+            <div className="grid grid-cols-1 gap-6">
+              {/* Activos */}
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <h4 className="font-medium text-gray-900 mb-3">Activos</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Caja y Bancos
+                    </label>
+                    <input
+                      type="number"
+                      name="activos_caja_bancos"
+                      value={formData.activos_caja_bancos}
+                      onChange={handleChange}
+                      min="0"
+                      step="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Inventario
+                    </label>
+                    <input
+                      type="number"
+                      name="activos_inventario"
+                      value={formData.activos_inventario}
+                      onChange={handleChange}
+                      min="0"
+                      step="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Mobiliario
+                    </label>
+                    <input
+                      type="number"
+                      name="activos_mobiliario"
+                      value={formData.activos_mobiliario}
+                      onChange={handleChange}
+                      min="0"
+                      step="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Total
+                    </label>
+                    <input
+                      type="number"
+                      name="activos_total"
+                      value={formData.activos_total}
+                      onChange={handleChange}
+                      min="0"
+                      step="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Pasivo */}
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <h4 className="font-medium text-gray-900 mb-3">Pasivo</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Deudas Largo Plazo
+                    </label>
+                    <input
+                      type="number"
+                      name="pasivo_deudas_largo_plazo"
+                      value={formData.pasivo_deudas_largo_plazo}
+                      onChange={handleChange}
+                      min="0"
+                      step="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Deudas Corto Plazo
+                    </label>
+                    <input
+                      type="number"
+                      name="pasivo_deudas_corto_plazo"
+                      value={formData.pasivo_deudas_corto_plazo}
+                      onChange={handleChange}
+                      min="0"
+                      step="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Patrimonio */}
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <h4 className="font-medium text-gray-900 mb-3">Patrimonio</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Capital
+                    </label>
+                    <input
+                      type="number"
+                      name="patrimonio_capital"
+                      value={formData.patrimonio_capital}
+                      onChange={handleChange}
+                      min="0"
+                      step="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Utilidades
+                    </label>
+                    <input
+                      type="number"
+                      name="patrimonio_utilidades"
+                      value={formData.patrimonio_utilidades}
+                      onChange={handleChange}
+                      min="0"
+                      step="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Ingresos */}
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <h4 className="font-medium text-gray-900 mb-3">Ingresos</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Por Ventas
+                    </label>
+                    <input
+                      type="number"
+                      name="ingresos_ventas"
+                      value={formData.ingresos_ventas}
+                      onChange={handleChange}
+                      min="0"
+                      step="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Extraordinario
+                    </label>
+                    <input
+                      type="number"
+                      name="ingresos_extraordinario"
+                      value={formData.ingresos_extraordinario}
+                      onChange={handleChange}
+                      min="0"
+                      step="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Gastos */}
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <h4 className="font-medium text-gray-900 mb-3">Gastos</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Compras
+                    </label>
+                    <input
+                      type="number"
+                      name="gastos_compras"
+                      value={formData.gastos_compras}
+                      onChange={handleChange}
+                      min="0"
+                      step="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Alquiler
+                    </label>
+                    <input
+                      type="number"
+                      name="gastos_alquiler"
+                      value={formData.gastos_alquiler}
+                      onChange={handleChange}
+                      min="0"
+                      step="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Alimentación
+                    </label>
+                    <input
+                      type="number"
+                      name="gastos_alimentacion"
+                      value={formData.gastos_alimentacion}
+                      onChange={handleChange}
+                      min="0"
+                      step="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Otros
+                    </label>
+                    <input
+                      type="number"
+                      name="gastos_otros"
+                      value={formData.gastos_otros}
+                      onChange={handleChange}
+                      min="0"
+                      step="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Condiciones del Crédito */}
+          <div>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Condiciones del Crédito</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Plazo (meses) *
+                </label>
+                <input
+                  type="number"
+                  name="plazo"
+                  value={formData.plazo}
+                  onChange={handleChange}
+                  required
+                  min="1"
+                  max="60"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tasa de Interés (%) *
+                </label>
+                <input
+                  type="number"
+                  name="tasa_interes"
+                  value={formData.tasa_interes}
+                  onChange={handleChange}
+                  required
+                  min="0"
+                  max="100"
+                  step="0.01"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tipo de Garantía *
+                </label>
+                <select
+                  name="tipo_garantia"
+                  value={formData.tipo_garantia}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                >
+                  <option value="">Seleccionar tipo de garantía</option>
+                  <option value="fiduciaria">Fiduciaria</option>
+                  <option value="solidaria">Solidaria</option>
+                  <option value="prendaria">Prendaria</option>
+                  <option value="mobiliaria">Mobiliaria</option>
+                </select>
+              </div>
+              {(formData.tipo_garantia === 'prendaria' || formData.tipo_garantia === 'mobiliaria') && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Valor de la Garantía *
+                  </label>
+                  <input
+                    type="number"
+                    name="valor_garantia"
+                    value={formData.valor_garantia}
+                    onChange={handleChange}
+                    required
+                    min="0"
+                    step="100"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Observaciones */}
+          <div>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Observaciones</h3>
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Observaciones
+                  Observaciones Adicionales
                 </label>
                 <textarea
                   name="observaciones"
@@ -500,19 +1091,6 @@ const CreditApplicationForm = ({ isOpen, onClose, onSubmit, prospect = null, edi
                   rows="3"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   placeholder="Observaciones adicionales sobre la solicitud..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Referencias
-                </label>
-                <textarea
-                  name="referencias"
-                  value={formData.referencias}
-                  onChange={handleChange}
-                  rows="2"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="Referencias personales o comerciales..."
                 />
               </div>
             </div>

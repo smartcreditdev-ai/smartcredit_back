@@ -126,8 +126,8 @@ const ProspectForm = ({ prospect, onSave, onClose }) => {
     'Radio', 'Otro'
   ];
 
-  const gruposEtarios = [
-    '15–19 años', '20–24 años', '25–29 años', '30 años o más'
+  const gradosDeInteres = [
+    'Bajo', 'Medio', 'Alto'
   ];
 
   const etnias = [
@@ -246,6 +246,14 @@ const ProspectForm = ({ prospect, onSave, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validar que haya un promotor asignado antes de enviar
+    if (!formData.promotor_id || formData.promotor_id === '') {
+      showFieldErrors(3);
+      alert('Debe seleccionar un promotor antes de crear el prospecto');
+      return;
+    }
+    
     setLoading(true);
     
     try {
@@ -288,7 +296,8 @@ const ProspectForm = ({ prospect, onSave, onClose }) => {
         
         return missingFields.length === 0;
       case 3:
-        return formData.grupo_etario && formData.etnia && formData.zona;
+        // Solo validar que haya un promotor asignado
+        return formData.promotor_id && formData.promotor_id !== '';
       default:
         return false;
     }
@@ -315,11 +324,27 @@ const ProspectForm = ({ prospect, onSave, onClose }) => {
         console.log('Campos faltantes:', missingFields);
         console.log('Valores actuales:', formData);
       }
+    } else if (step === 3) {
+      // Solo validar promotor en el paso 3
+      const newErrors = {};
+      if (!formData.promotor_id || formData.promotor_id === '') {
+        newErrors.promotor_id = true;
+      }
+      setFieldErrors(newErrors);
     }
   };
 
   const nextStep = (e) => {
     e.preventDefault();
+    
+    // Validar el paso actual antes de avanzar
+    if (currentStep === 2) {
+      if (!validateStep(2)) {
+        showFieldErrors(2);
+        return;
+      }
+    }
+    
     setCurrentStep(prev => Math.min(prev + 1, 3));
   };
 
@@ -367,7 +392,7 @@ const ProspectForm = ({ prospect, onSave, onClose }) => {
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              DNI *
+              Identificación *
             </label>
             <input
               type="text"
@@ -527,56 +552,13 @@ const ProspectForm = ({ prospect, onSave, onClose }) => {
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Agencia *
-            </label>
-            <select
-              name="agencia"
-              value={formData.agencia}
-              onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-                fieldErrors.agencia 
-                  ? 'border-red-500 bg-red-50' 
-                  : 'border-gray-300'
-              }`}
-              required
-            >
-              <option value="">Seleccionar Agencia</option>
-              {agencias.map(agencia => (
-                <option key={agencia} value={agencia}>{agencia}</option>
-              ))}
-            </select>
-          </div>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Facilitador *
+              Tipo de referido *
             </label>
             <select
-              name="facilitador"
-              value={formData.facilitador}
-              onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-                fieldErrors.facilitador 
-                  ? 'border-red-500 bg-red-50' 
-                  : 'border-gray-300'
-              }`}
-              required
-            >
-              <option value="">Seleccionar Facilitador</option>
-              {facilitadores.map(facilitador => (
-                <option key={facilitador} value={facilitador}>{facilitador}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Campaña *
-            </label>
-            <select
-              name="campaña"
+              name="tipo de referido"
               value={formData.campaña}
               onChange={handleInputChange}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
@@ -636,22 +618,7 @@ const ProspectForm = ({ prospect, onSave, onClose }) => {
             </select>
           </div>
           
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tipo de Garantía
-            </label>
-            <select
-              name="tipo_garantia"
-              value={formData.tipo_garantia}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option value="">Seleccionar Garantía</option>
-              {tiposGarantia.map(tipo => (
-                <option key={tipo} value={tipo}>{tipo}</option>
-              ))}
-            </select>
-          </div>
+          
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -697,27 +664,7 @@ const ProspectForm = ({ prospect, onSave, onClose }) => {
             </select>
           </div>
           
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Programa Recomendado *
-            </label>
-            <select
-              name="programa_recomendado"
-              value={formData.programa_recomendado}
-              onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-                fieldErrors.programa_recomendado 
-                  ? 'border-red-500 bg-red-50' 
-                  : 'border-gray-300'
-              }`}
-              required
-            >
-              <option value="">Seleccionar Programa</option>
-              {programasRecomendados.map(programa => (
-                <option key={programa} value={programa}>{programa}</option>
-              ))}
-            </select>
-          </div>
+          
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -775,17 +722,17 @@ const ProspectForm = ({ prospect, onSave, onClose }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Edad (Grupo Etario) *
+              Grado de interés *
             </label>
             <select
-              name="grupo_etario"
-              value={formData.grupo_etario}
+              name="grado_de_interes"
+              value={formData.grado_interes}
               onChange={handleInputChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               required
             >
-              <option value="">Seleccionar Grupo Etario</option>
-              {gruposEtarios.map(grupo => (
+              <option value="">Seleccionar Grado de Interés</option>
+              {gradosDeInteres.map(grupo => (
                 <option key={grupo} value={grupo}>{grupo}</option>
               ))}
             </select>
@@ -829,13 +776,18 @@ const ProspectForm = ({ prospect, onSave, onClose }) => {
           
               <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Promotor Asignado
+                  Promotor Asignado *
                 </label>
                   <select
                     name="promotor_id"
                     value={formData.promotor_id}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+                fieldErrors.promotor_id 
+                  ? 'border-red-500 bg-red-50' 
+                  : 'border-gray-300'
+              }`}
+              required
                   >
               <option value="">Seleccionar Promotor</option>
               {promotores.map(promotor => (
@@ -958,7 +910,8 @@ const ProspectForm = ({ prospect, onSave, onClose }) => {
                   <button
                     type="button"
                     onClick={(e) => nextStep(e)}
-                    className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 flex items-center"
+                    disabled={!validateStep(currentStep)}
+                    className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                   >
                     Siguiente
                     <ChevronRight className="w-4 h-4 ml-2" />

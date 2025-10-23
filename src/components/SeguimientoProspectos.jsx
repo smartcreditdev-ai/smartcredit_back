@@ -305,7 +305,7 @@ const SeguimientoProspectos = () => {
                             {solicitud.cliente_nombre}
                           </div>
                           <div className="text-sm text-gray-500">
-                            DNI: {solicitud.cliente_dni}
+                          Identificación: {solicitud.cliente_dni}
                           </div>
                         </div>
                       </div>
@@ -610,7 +610,7 @@ const SeguimientoModal = ({ solicitud, onSave, onClose, onDataReload }) => {
       titulo: 'Recopilación de Documentación',
       descripcion: 'Recopilar documentos básicos del cliente.',
       acciones: ['Solicitar documentos', 'Verificar autenticidad', 'Digitalizar'],
-      documentos: ['DNI', 'Comprobante de ingresos', 'Referencias'],
+      documentos: ['Identificación', 'Comprobante de ingresos', 'Referencias'],
       tiempoEstimado: '1-2 días',
       camposRequeridos: [
         { campo: 'dni_image', tipo: 'file', label: 'Documento', requerido: true },
@@ -976,13 +976,13 @@ const SeguimientoModal = ({ solicitud, onSave, onClose, onDataReload }) => {
                             {campo.campo === 'dni_image' && etapaData.documento && (
                               <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                                 <div className="mb-3">
-                                  <h4 className="font-medium text-blue-900">DNI Existente</h4>
+                                  <h4 className="font-medium text-blue-900">Identificación Existente</h4>
                                   <p className="text-sm text-blue-700">Documento ya cargado en el sistema</p>
                                 </div>
                                 <div className="bg-white p-3 rounded-lg border">
                                   <img
                                     src={etapaData.documento}
-                                    alt="DNI del cliente"
+                                    alt="Identificación del cliente"
                                     className="w-full max-w-md mx-auto rounded-lg shadow-sm"
                                     style={{ maxHeight: '300px', objectFit: 'contain' }}
                                     onError={(e) => {
@@ -1171,7 +1171,7 @@ const SeguimientoModal = ({ solicitud, onSave, onClose, onDataReload }) => {
               </div>
               <div className="flex items-center">
                 <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                <span>DNI Válido (5-20 chars)</span>
+                <span>Identificación Válido (5-20 chars)</span>
               </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
@@ -1200,7 +1200,7 @@ const SeguimientoModal = ({ solicitud, onSave, onClose, onDataReload }) => {
           <div className="mt-6">
             <h4 className="text-lg font-semibold text-gray-900 mb-4">Documentación</h4>
             <div className="space-y-3">
-              {/* DNI - Siempre visible en todas las etapas */}
+              {/* Identificación - Siempre visible en todas las etapas */}
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div>
                   <h5 className="font-medium text-gray-900">Documento de Identidad</h5>
@@ -1215,7 +1215,7 @@ const SeguimientoModal = ({ solicitud, onSave, onClose, onDataReload }) => {
                         {etapaData.dni_image && (
                           <img
                             src={etapaData.dni_image}
-                            alt="DNI del cliente"
+                            alt="Identificación del cliente"
                             className="w-16 h-12 object-cover rounded border cursor-pointer hover:scale-105 transition-transform"
                             onClick={() => {
                               const modal = document.createElement('div');
@@ -1223,14 +1223,14 @@ const SeguimientoModal = ({ solicitud, onSave, onClose, onDataReload }) => {
                               modal.innerHTML = `
                                 <div class="bg-white rounded-lg p-4 max-w-4xl max-h-[90vh] overflow-auto">
                                   <div class="flex justify-between items-center mb-4">
-                                    <h3 class="text-lg font-semibold">DNI del Cliente</h3>
+                                    <h3 class="text-lg font-semibold">Identificación del Cliente</h3>
                                     <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
                                       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                       </svg>
                                     </button>
                                   </div>
-                                  <img src="${etapaData.dni_image}" alt="DNI del cliente" class="w-full max-w-2xl mx-auto rounded-lg shadow-lg" />
+                                  <img src="${etapaData.dni_image}" alt="Identificación del cliente" class="w-full max-w-2xl mx-auto rounded-lg shadow-lg" />
                                 </div>
                               `;
                               document.body.appendChild(modal);

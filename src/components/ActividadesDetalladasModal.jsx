@@ -263,7 +263,7 @@ const ActividadesDetalladasModal = ({ isOpen, onClose, promotor }) => {
                         {actividad.clientes.nombre} {actividad.clientes.apellido}
                       </div>
                       <div className="text-sm text-gray-600">
-                        (DNI: {actividad.clientes.dni})
+                        (Identificación: {actividad.clientes.dni})
                       </div>
                     </div>
                   )}
