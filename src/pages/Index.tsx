@@ -5,21 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TechnologySection from "@/components/TechnologySection";
+import FeaturesSection from "@/components/FeaturesSection";
+import BenefitsSection from "@/components/BenefitsSection";
 import heroImage from "@/assets/hero-smartcredit.jpg";
-import { 
-  Users, 
-  FileText, 
-  Wallet, 
-  CreditCard, 
-  Globe, 
-  Shield,
-  Zap,
-  TrendingUp,
-  CheckCircle,
-  Database,
-  Lock,
-  Smartphone
-} from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 
@@ -40,80 +28,6 @@ const Index = () => {
     setFormData({ nombre: "", email: "", entidad: "", mensaje: "" });
   };
 
-  const features = [
-    {
-      icon: Users,
-      title: "Gestión de Prospectos",
-      description: "Administra y califica prospectos de manera eficiente con herramientas de seguimiento avanzadas.",
-    },
-    {
-      icon: FileText,
-      title: "Solicitudes de Crédito",
-      description: "Sistema integral para recibir, evaluar y aprobar solicitudes de crédito digitalmente.",
-    },
-    {
-      icon: Wallet,
-      title: "Administración de Cartera",
-      description: "Control total de tu cartera de créditos con análisis de mora y reportes detallados.",
-    },
-    {
-      icon: CreditCard,
-      title: "Sistema de Pagos",
-      description: "Procesa pagos totales, parciales y promesas de pago con integración a múltiples pasarelas.",
-    },
-    {
-      icon: Globe,
-      title: "Multi-idioma",
-      description: "Interfaz disponible en español e inglés con soporte para expansión internacional.",
-    },
-    {
-      icon: Shield,
-      title: "Roles y Permisos",
-      description: "Sistema granular de permisos por agencia y usuario para máxima seguridad.",
-    },
-  ];
-
-  const techStack = [
-    { name: "React 18", description: "Frontend moderno y reactivo" },
-    { name: "Supabase", description: "Backend escalable con PostgreSQL" },
-    { name: "Tailwind CSS", description: "Diseño responsivo y personalizable" },
-    { name: "Vite", description: "Build tool ultra rápido" },
-    { name: "TypeScript", description: "Código seguro y mantenible" },
-    { name: "JWT Auth", description: "Autenticación segura" },
-  ];
-
-  const benefits = [
-    {
-      icon: Zap,
-      title: "Reducción de Errores Manuales",
-      description: "Automatiza procesos y elimina errores de captura de datos.",
-    },
-    {
-      icon: TrendingUp,
-      title: "Evaluación Crediticia Automatizada",
-      description: "Algoritmos inteligentes para evaluar el riesgo crediticio.",
-    },
-    {
-      icon: CheckCircle,
-      title: "Control de Mora y Cobranzas",
-      description: "Herramientas avanzadas para gestión de cartera vencida.",
-    },
-    {
-      icon: Database,
-      title: "Escalabilidad para Múltiples Agencias",
-      description: "Crece sin límites con arquitectura multi-tenant.",
-    },
-    {
-      icon: Lock,
-      title: "Seguridad de Nivel Empresarial",
-      description: "Protección de datos con RLS y encriptación end-to-end.",
-    },
-    {
-      icon: Smartphone,
-      title: "Acceso desde Cualquier Dispositivo",
-      description: "Interfaz responsive optimizada para móvil, tablet y desktop.",
-    },
-  ];
 
   return (
     <div className="min-h-screen">
@@ -151,63 +65,13 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section id="caracteristicas" className="py-20 gradient-subtle">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-foreground mb-4">Características Principales</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Todo lo que necesitas para gestionar tu cartera de créditos de manera profesional
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <Card key={index} className="p-6 hover:shadow-lg transition-smooth bg-card">
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                    <Icon className="w-6 h-6 text-primary" />
-                  </div>
-                  <h3 className="text-foreground mb-2">{feature.title}</h3>
-                  <p className="text-muted-foreground">{feature.description}</p>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      <FeaturesSection />
 
       {/* Technology Section */}
       <TechnologySection />
 
       {/* Benefits Section */}
-      <section id="beneficios" className="py-20 gradient-subtle">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-foreground mb-4">Beneficios para Microfinancieras</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Transforma la gestión de tu cartera de créditos con tecnología de vanguardia
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {benefits.map((benefit, index) => {
-              const Icon = benefit.icon;
-              return (
-                <div key={index} className="flex gap-4">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-secondary" />
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-foreground mb-2">{benefit.title}</h3>
-                    <p className="text-muted-foreground">{benefit.description}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      <BenefitsSection />
 
       {/* Contact Section */}
       <section id="contacto" className="py-20 bg-card">
