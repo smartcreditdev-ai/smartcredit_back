@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import TechnologySection from "@/components/TechnologySection";
 import heroImage from "@/assets/hero-smartcredit.jpg";
 import { 
   Users, 
@@ -176,49 +177,7 @@ const Index = () => {
       </section>
 
       {/* Technology Section */}
-      <section id="tecnologia" className="py-20 bg-card">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-foreground mb-4">Arquitectura Tecnológica</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              SmartCredit se construyó sobre una arquitectura modular con React y Supabase, garantizando seguridad, rendimiento y facilidad de integración.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {techStack.map((tech, index) => (
-              <div key={index} className="text-center p-6 rounded-lg bg-muted hover:bg-muted/80 transition-smooth">
-                <h4 className="font-bold text-foreground mb-2">{tech.name}</h4>
-                <p className="text-sm text-muted-foreground">{tech.description}</p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-12 p-8 rounded-2xl bg-muted/50">
-            <h3 className="text-foreground mb-6 text-center">Stack Tecnológico</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-semibold text-foreground mb-3">Frontend</h4>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li>• React 18 con TypeScript</li>
-                  <li>• Vite para build ultra rápido</li>
-                  <li>• Tailwind CSS para diseño responsive</li>
-                  <li>• i18next para internacionalización</li>
-                  <li>• Lucide React Icons</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-3">Backend</h4>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li>• Supabase con PostgreSQL</li>
-                  <li>• Autenticación JWT</li>
-                  <li>• Row Level Security (RLS)</li>
-                  <li>• Realtime updates</li>
-                  <li>• API REST documentada</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <TechnologySection />
 
       {/* Benefits Section */}
       <section id="beneficios" className="py-20 gradient-subtle">
