@@ -1,27 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Users, FileText, Wallet, CreditCard, Globe, Shield } from "lucide-react";
+import { motion, useInView } from "framer-motion";
 
 const FeaturesSection = () => {
-  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
 
   const features = [
     {
@@ -78,33 +62,69 @@ const FeaturesSection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Header with Animation */}
-        <div className={`text-center mb-16 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <h2 className="text-foreground mb-4">Características Principales</h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 50 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <motion.h2 
+            className="text-foreground mb-4"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            Características Principales
+          </motion.h2>
+          <motion.p 
+            className="text-xl text-muted-foreground max-w-3xl mx-auto"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
             Todo lo que necesitas para gestionar tu cartera de créditos de manera{" "}
             <span className="text-primary font-semibold">profesional</span> e{" "}
             <span className="text-accent font-semibold">inteligente</span>
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         {/* Features Grid with Staggered Animation */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <div
+              <motion.div
                 key={index}
-                className={`group transition-all duration-700 ${isVisible ? `opacity-100 translate-y-0 ${feature.delay}` : "opacity-0 translate-y-10"}`}
+                className="group"
+                initial={{ opacity: 0, y: 50, rotateX: -15 }}
+                animate={isInView ? { opacity: 1, y: 0, rotateX: 0 } : {}}
+                transition={{ 
+                  duration: 0.6, 
+                  delay: index * 0.1,
+                  ease: [0.25, 0.4, 0.25, 1]
+                }}
+                whileHover={{ 
+                  scale: 1.05, 
+                  rotateY: 5,
+                  transition: { duration: 0.3 }
+                }}
               >
-                <Card className="p-6 h-full hover:shadow-lg transition-all duration-300 hover:scale-105 bg-card/80 backdrop-blur-sm border-2 border-border hover:border-primary/30 relative overflow-hidden">
+                <Card className="p-6 h-full hover:shadow-lg transition-all duration-300 bg-card/80 backdrop-blur-sm border-2 border-border hover:border-primary/30 relative overflow-hidden">
                   {/* Gradient Overlay on Hover */}
                   <div className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-5 transition-opacity duration-300" style={{ background: `linear-gradient(135deg, var(--primary), var(--secondary))` }} />
                   
                   {/* Icon with Gradient Background */}
                   <div className="relative z-10">
-                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg`}>
+                    <motion.div 
+                      className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4 shadow-lg`}
+                      whileHover={{ 
+                        scale: 1.15, 
+                        rotate: 8,
+                        transition: { duration: 0.3, type: "spring", stiffness: 300 }
+                      }}
+                    >
                       <Icon className="w-7 h-7 text-white" />
-                    </div>
+                    </motion.div>
                     
                     <h3 className="text-foreground mb-3 font-bold group-hover:text-primary transition-colors">{feature.title}</h3>
                     <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
@@ -113,22 +133,31 @@ const FeaturesSection = () => {
                   {/* Decorative Corner Element */}
                   <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors duration-300" />
                 </Card>
-              </div>
+              </motion.div>
             );
           })}
         </div>
 
         {/* Bottom CTA Section */}
-        <div className={`mt-16 text-center transition-all duration-1000 delay-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <div className="inline-block p-8 rounded-2xl bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-glow">
+        <motion.div 
+          className="mt-16 text-center"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.8 }}
+        >
+          <motion.div 
+            className="inline-block p-8 rounded-2xl bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-glow"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
             <p className="text-lg text-foreground font-semibold mb-2">
               ¿Listo para transformar tu gestión de créditos?
             </p>
             <p className="text-muted-foreground">
               Descubre todas las funcionalidades en una demo personalizada
             </p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

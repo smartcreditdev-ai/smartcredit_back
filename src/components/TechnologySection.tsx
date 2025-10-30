@@ -1,56 +1,65 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import techBackground from "@/assets/tech-background.jpg";
 import { Database, Lock, Zap, Globe, ArrowRight, Code, Server, Shield, Palette, Layers, Rocket } from "lucide-react";
+import { motion, useInView } from "framer-motion";
+import * as anime from "animejs";
 
 const TechnologySection = () => {
-  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const techIconsRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
+    if (isInView && techIconsRef.current) {
+      // Anime.js animation for tech icons
+      anime({
+        targets: techIconsRef.current.querySelectorAll('.tech-icon'),
+        scale: [0, 1],
+        rotate: [180, 0],
+        opacity: [0, 1],
+        delay: anime.stagger(150),
+        duration: 800,
+        easing: 'easeOutElastic(1, .8)'
+      });
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+      // Floating animation for icons
+      anime({
+        targets: techIconsRef.current.querySelectorAll('.tech-card'),
+        translateY: [
+          { value: -10, duration: 2000 },
+          { value: 0, duration: 2000 }
+        ],
+        loop: true,
+        easing: 'easeInOutSine',
+        delay: anime.stagger(200)
+      });
     }
-
-    return () => observer.disconnect();
-  }, []);
+  }, [isInView]);
 
   const technologies = [
     {
       name: "React",
       icon: Layers,
       description: "Frontend moderno y reactivo",
-      delay: "delay-100",
       gradient: "from-blue-500 to-cyan-500",
     },
     {
       name: "Supabase",
       icon: Database,
       description: "Backend escalable con PostgreSQL",
-      delay: "delay-200",
       gradient: "from-green-500 to-emerald-500",
     },
     {
       name: "Tailwind",
       icon: Palette,
       description: "Diseño responsive y personalizable",
-      delay: "delay-300",
       gradient: "from-cyan-500 to-blue-500",
     },
     {
       name: "Vite",
       icon: Rocket,
       description: "Build tool ultra rápido",
-      delay: "delay-[400ms]",
       gradient: "from-purple-500 to-pink-500",
     },
   ];
@@ -104,184 +113,314 @@ const TechnologySection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
-        <div className={`text-center mb-16 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <h2 className="text-foreground mb-4">Arquitectura Tecnológica</h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 50 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+        >
+          <motion.h2 
+            className="text-foreground mb-4"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            Arquitectura Tecnológica
+          </motion.h2>
+          <motion.p 
+            className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
             SmartCredit combina <span className="text-primary font-semibold">React</span> y{" "}
             <span className="text-secondary font-semibold">Supabase</span> en una arquitectura modular que garantiza{" "}
             <span className="text-accent font-semibold">seguridad</span>, rendimiento, escalabilidad y facilidad de integración.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         {/* Technology Icons Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+        <div ref={techIconsRef} className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
           {technologies.map((tech, index) => {
             const Icon = tech.icon;
             return (
-              <div
+              <motion.div
                 key={index}
-                className={`group transition-all duration-700 ${isVisible ? `opacity-100 translate-y-0 ${tech.delay}` : "opacity-0 translate-y-10"}`}
+                className="tech-card group"
+                whileHover={{ 
+                  scale: 1.08,
+                  rotateY: 10,
+                  transition: { duration: 0.3 }
+                }}
               >
-                <Card className="p-8 hover:shadow-glow transition-all duration-300 hover:scale-105 bg-card/50 backdrop-blur-sm border-2 border-border hover:border-primary/50 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-10 transition-opacity duration-300" style={{ background: `linear-gradient(135deg, var(--primary), var(--secondary))` }} />
+                <Card className="p-8 hover:shadow-glow transition-all duration-300 bg-card/50 backdrop-blur-sm border-2 border-border hover:border-primary/50 relative overflow-hidden h-full">
+                  <motion.div 
+                    className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-10 transition-opacity duration-300" 
+                    style={{ background: `linear-gradient(135deg, var(--primary), var(--secondary))` }}
+                  />
                   <div className="flex flex-col items-center text-center gap-4 relative z-10">
-                    <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${tech.gradient} flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg`}>
+                    <motion.div 
+                      className={`tech-icon w-20 h-20 rounded-2xl bg-gradient-to-br ${tech.gradient} flex items-center justify-center shadow-lg`}
+                      whileHover={{ 
+                        rotate: 360,
+                        scale: 1.15,
+                        transition: { duration: 0.6, ease: "easeInOut" }
+                      }}
+                    >
                       <Icon className="w-10 h-10 text-white" />
-                    </div>
-                    <div>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={isInView ? { opacity: 1 } : {}}
+                      transition={{ delay: 0.5 + index * 0.1 }}
+                    >
                       <h3 className="text-foreground font-bold mb-1">{tech.name}</h3>
                       <p className="text-sm text-muted-foreground">{tech.description}</p>
-                    </div>
+                    </motion.div>
                   </div>
                 </Card>
-              </div>
+              </motion.div>
             );
           })}
         </div>
 
         {/* Architecture Diagram */}
-        <div className={`mb-16 transition-all duration-1000 delay-500 ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}>
+        <motion.div 
+          className="mb-16"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.6 }}
+        >
           <div className="relative">
             {/* Frontend Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-              <Card className="p-8 bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20 hover:border-primary/40 transition-all duration-300 group">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Code className="w-6 h-6 text-primary" />
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.7 }}
+                whileHover={{ scale: 1.03 }}
+              >
+                <Card className="p-8 bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20 hover:border-primary/40 transition-all duration-300 group">
+                  <div className="flex items-center gap-4 mb-4">
+                    <motion.div 
+                      className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center"
+                      whileHover={{ rotate: 360 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <Code className="w-6 h-6 text-primary" />
+                    </motion.div>
+                    <h3 className="text-xl font-bold text-foreground">Frontend</h3>
                   </div>
-                  <h3 className="text-xl font-bold text-foreground">Frontend</h3>
-                </div>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li className="flex items-center gap-2">
-                    <ArrowRight className="w-4 h-4 text-primary" />
-                    React 18 + TypeScript
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <ArrowRight className="w-4 h-4 text-primary" />
-                    Tailwind CSS
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <ArrowRight className="w-4 h-4 text-primary" />
-                    Vite Build Tool
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <ArrowRight className="w-4 h-4 text-primary" />
-                    Responsive UI
-                  </li>
-                </ul>
-              </Card>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li className="flex items-center gap-2">
+                      <ArrowRight className="w-4 h-4 text-primary" />
+                      React 18 + TypeScript
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <ArrowRight className="w-4 h-4 text-primary" />
+                      Tailwind CSS
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <ArrowRight className="w-4 h-4 text-primary" />
+                      Vite Build Tool
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <ArrowRight className="w-4 h-4 text-primary" />
+                      Responsive UI
+                    </li>
+                  </ul>
+                </Card>
+              </motion.div>
 
               {/* Connection Flow */}
-              <div className="flex flex-col items-center justify-center gap-4 py-8">
+              <motion.div 
+                className="flex flex-col items-center justify-center gap-4 py-8"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ duration: 0.6, delay: 0.8 }}
+              >
                 {/* Top Arrow */}
                 <div className="hidden lg:block">
                   <div className="flex items-center gap-2">
-                    <div className="w-24 h-0.5 bg-gradient-to-r from-primary to-secondary animate-pulse" />
-                    <ArrowRight className="w-6 h-6 text-primary animate-bounce" style={{ animationDuration: "2s" }} />
+                    <motion.div 
+                      className="w-24 h-0.5 bg-gradient-to-r from-primary to-secondary"
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                    <motion.div
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <ArrowRight className="w-6 h-6 text-primary" />
+                    </motion.div>
                   </div>
                 </div>
 
                 {/* Central Icon */}
                 <div className="relative">
-                  <div className="w-20 h-20 rounded-full bg-gradient-primary flex items-center justify-center animate-pulse shadow-glow">
+                  <motion.div 
+                    className="w-20 h-20 rounded-full bg-gradient-primary flex items-center justify-center shadow-glow"
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
                     <Zap className="w-10 h-10 text-primary-foreground" />
-                  </div>
-                  <div className="absolute -inset-2 rounded-full border-2 border-primary/30 animate-ping" />
-                  <div className="absolute -inset-4 rounded-full border border-secondary/20 animate-ping" style={{ animationDuration: "2s" }} />
+                  </motion.div>
+                  <motion.div 
+                    className="absolute -inset-2 rounded-full border-2 border-primary/30"
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  <motion.div 
+                    className="absolute -inset-4 rounded-full border border-secondary/20"
+                    animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0, 0.3] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                  />
                 </div>
 
                 {/* Label */}
-                <div className="text-center">
+                <motion.div 
+                  className="text-center"
+                  initial={{ opacity: 0 }}
+                  animate={isInView ? { opacity: 1 } : {}}
+                  transition={{ delay: 1 }}
+                >
                   <p className="text-sm font-semibold text-foreground">
                     API REST
                   </p>
                   <p className="text-xs text-muted-foreground">Comunicación Segura</p>
                   <div className="flex items-center justify-center gap-1 mt-2">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    <motion.div 
+                      className="w-2 h-2 rounded-full bg-green-500"
+                      animate={{ opacity: [1, 0.3, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    />
                     <span className="text-xs text-green-600">En tiempo real</span>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Bottom Arrow */}
                 <div className="hidden lg:block">
                   <div className="flex items-center gap-2">
-                    <ArrowRight className="w-6 h-6 text-secondary animate-bounce" style={{ animationDuration: "2s", animationDelay: "0.5s" }} />
-                    <div className="w-24 h-0.5 bg-gradient-to-r from-secondary to-primary animate-pulse" />
+                    <motion.div
+                      animate={{ x: [0, -5, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                    >
+                      <ArrowRight className="w-6 h-6 text-secondary" />
+                    </motion.div>
+                    <motion.div 
+                      className="w-24 h-0.5 bg-gradient-to-r from-secondary to-primary"
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                    />
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Backend Section */}
-              <Card className="p-8 bg-gradient-to-br from-secondary/10 to-secondary/5 border-2 border-secondary/20 hover:border-secondary/40 transition-all duration-300 group">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Server className="w-6 h-6 text-secondary" />
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.9 }}
+                whileHover={{ scale: 1.03 }}
+              >
+                <Card className="p-8 bg-gradient-to-br from-secondary/10 to-secondary/5 border-2 border-secondary/20 hover:border-secondary/40 transition-all duration-300 group">
+                  <div className="flex items-center gap-4 mb-4">
+                    <motion.div 
+                      className="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center"
+                      whileHover={{ rotate: 360 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <Server className="w-6 h-6 text-secondary" />
+                    </motion.div>
+                    <h3 className="text-xl font-bold text-foreground">Backend</h3>
                   </div>
-                  <h3 className="text-xl font-bold text-foreground">Backend</h3>
-                </div>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li className="flex items-center gap-2">
-                    <ArrowRight className="w-4 h-4 text-secondary" />
-                    Supabase Platform
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <ArrowRight className="w-4 h-4 text-secondary" />
-                    PostgreSQL Database
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <ArrowRight className="w-4 h-4 text-secondary" />
-                    Row Level Security
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <ArrowRight className="w-4 h-4 text-secondary" />
-                    Realtime Subscriptions
-                  </li>
-                </ul>
-              </Card>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li className="flex items-center gap-2">
+                      <ArrowRight className="w-4 h-4 text-secondary" />
+                      Supabase Platform
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <ArrowRight className="w-4 h-4 text-secondary" />
+                      PostgreSQL Database
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <ArrowRight className="w-4 h-4 text-secondary" />
+                      Row Level Security
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <ArrowRight className="w-4 h-4 text-secondary" />
+                      Realtime Subscriptions
+                    </li>
+                  </ul>
+                </Card>
+              </motion.div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Key Features */}
-        <div className={`transition-all duration-1000 delay-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 1 }}
+        >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <div
+                <motion.div
                   key={index}
-                  className="group relative p-6 rounded-xl bg-muted/50 hover:bg-muted transition-all duration-300 hover:scale-105 cursor-pointer"
+                  className="group relative p-6 rounded-xl bg-muted/50 hover:bg-muted transition-all duration-300 cursor-pointer"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                  transition={{ duration: 0.5, delay: 1.1 + index * 0.1 }}
+                  whileHover={{ scale: 1.08, y: -5 }}
                 >
                   <div className="flex flex-col items-center text-center gap-3">
-                    <div className={`w-12 h-12 rounded-lg bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform ${feature.color}`}>
+                    <motion.div 
+                      className={`w-12 h-12 rounded-lg bg-background/80 flex items-center justify-center ${feature.color}`}
+                      whileHover={{ rotate: 360, scale: 1.2 }}
+                      transition={{ duration: 0.5 }}
+                    >
                       <Icon className="w-6 h-6" />
-                    </div>
+                    </motion.div>
                     <div>
                       <h4 className="font-semibold text-foreground mb-1">{feature.title}</h4>
                       <p className="text-xs text-muted-foreground">{feature.description}</p>
                     </div>
                   </div>
                   <div className="absolute inset-0 rounded-xl bg-gradient-primary opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
-                </div>
+                </motion.div>
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
         {/* Security Badge */}
-        <div className={`mt-12 flex justify-center transition-all duration-1000 delay-1000 ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}>
-          <Card className="p-6 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 border-2 border-primary/20 hover:shadow-glow transition-all duration-300 hover:scale-105">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                <Shield className="w-6 h-6 text-primary" />
+        <motion.div 
+          className="mt-12 flex justify-center"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.8, delay: 1.5 }}
+        >
+          <motion.div whileHover={{ scale: 1.05 }}>
+            <Card className="p-6 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 border-2 border-primary/20 hover:shadow-glow transition-all duration-300">
+              <div className="flex items-center gap-4">
+                <motion.div 
+                  className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center"
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  <Shield className="w-6 h-6 text-primary" />
+                </motion.div>
+                <div>
+                  <h4 className="font-bold text-foreground">Seguridad Empresarial</h4>
+                  <p className="text-sm text-muted-foreground">Encriptación end-to-end, JWT Auth, y RLS integrado</p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-bold text-foreground">Seguridad Empresarial</h4>
-                <p className="text-sm text-muted-foreground">Encriptación end-to-end, JWT Auth, y RLS integrado</p>
-              </div>
-            </div>
-          </Card>
-        </div>
+            </Card>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

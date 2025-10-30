@@ -1,26 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { Zap, TrendingUp, CheckCircle, Database, Lock, Smartphone } from "lucide-react";
+import { motion, useInView } from "framer-motion";
 
 const BenefitsSection = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
 
   const benefits = [
     {
@@ -84,35 +68,70 @@ const BenefitsSection = () => {
         <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-secondary/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4 relative z-10" ref={sectionRef}>
         {/* Header */}
-        <div className={`text-center mb-16 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <h2 className="text-foreground mb-4">Beneficios para Microfinancieras</h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 50 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+        >
+          <motion.h2 
+            className="text-foreground mb-4"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            Beneficios para Microfinancieras
+          </motion.h2>
+          <motion.p 
+            className="text-xl text-muted-foreground max-w-3xl mx-auto"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
             Transforma la gestión de tu cartera de créditos con{" "}
             <span className="text-primary font-semibold">tecnología de vanguardia</span> y{" "}
             <span className="text-secondary font-semibold">resultados medibles</span>
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         {/* Benefits Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {benefits.map((benefit, index) => {
             const Icon = benefit.icon;
             return (
-              <div
+              <motion.div
                 key={index}
-                className={`group transition-all duration-700 ${isVisible ? `opacity-100 translate-x-0 ${benefit.delay}` : "opacity-0 -translate-x-10"}`}
+                className="group"
+                initial={{ opacity: 0, x: -50, rotateY: -20 }}
+                animate={isInView ? { opacity: 1, x: 0, rotateY: 0 } : {}}
+                transition={{ 
+                  duration: 0.7, 
+                  delay: index * 0.1,
+                  ease: [0.25, 0.4, 0.25, 1]
+                }}
+                whileHover={{ 
+                  scale: 1.05,
+                  transition: { duration: 0.2 }
+                }}
               >
-                <div className="flex gap-4 p-6 rounded-xl bg-card/50 backdrop-blur-sm border-2 border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:scale-105 relative overflow-hidden">
+                <div className="flex gap-4 p-6 rounded-xl bg-card/50 backdrop-blur-sm border-2 border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg relative overflow-hidden">
                   {/* Background Gradient on Hover */}
                   <div className={`absolute inset-0 ${benefit.bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
                   
                   {/* Icon Container */}
                   <div className="flex-shrink-0 relative z-10">
-                    <div className={`w-14 h-14 rounded-xl ${benefit.bgColor} flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md`}>
+                    <motion.div 
+                      className={`w-14 h-14 rounded-xl ${benefit.bgColor} flex items-center justify-center shadow-md`}
+                      whileHover={{ 
+                        scale: 1.2, 
+                        rotate: 10,
+                        transition: { duration: 0.3, type: "spring", stiffness: 400 }
+                      }}
+                    >
                       <Icon className={`w-7 h-7 ${benefit.color}`} />
-                    </div>
+                    </motion.div>
                   </div>
 
                   {/* Content */}
@@ -128,28 +147,50 @@ const BenefitsSection = () => {
                   {/* Hover Effect Corner */}
                   <div className={`absolute -bottom-2 -right-2 w-20 h-20 ${benefit.bgColor} rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
 
         {/* Stats Section */}
-        <div className={`mt-16 transition-all duration-1000 delay-700 ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}>
+        <motion.div 
+          className="mt-16"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.8 }}
+        >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-glow">
-              <div className="text-4xl font-bold text-primary mb-2 animate-pulse">99.9%</div>
-              <div className="text-muted-foreground">Tiempo de Actividad</div>
-            </div>
-            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-secondary/10 to-secondary/5 border border-secondary/20 hover:border-secondary/40 transition-all duration-300 hover:shadow-glow">
-              <div className="text-4xl font-bold text-secondary mb-2 animate-pulse" style={{ animationDelay: "0.2s" }}>50%</div>
-              <div className="text-muted-foreground">Reducción de Tiempo</div>
-            </div>
-            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 hover:border-accent/40 transition-all duration-300 hover:shadow-glow">
-              <div className="text-4xl font-bold text-accent mb-2 animate-pulse" style={{ animationDelay: "0.4s" }}>24/7</div>
-              <div className="text-muted-foreground">Soporte Técnico</div>
-            </div>
+            {[
+              { value: "99.9%", label: "Tiempo de Actividad", color: "primary", delay: 0 },
+              { value: "50%", label: "Reducción de Tiempo", color: "secondary", delay: 0.1 },
+              { value: "24/7", label: "Soporte Técnico", color: "accent", delay: 0.2 }
+            ].map((stat, index) => (
+              <motion.div
+                key={index}
+                className={`text-center p-8 rounded-2xl bg-gradient-to-br from-${stat.color}/10 to-${stat.color}/5 border border-${stat.color}/20 hover:border-${stat.color}/40 transition-all duration-300 hover:shadow-glow`}
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.9 + stat.delay }}
+                whileHover={{ scale: 1.05, y: -5 }}
+              >
+                <motion.div 
+                  className={`text-4xl font-bold text-${stat.color} mb-2`}
+                  initial={{ scale: 0 }}
+                  animate={isInView ? { scale: 1 } : {}}
+                  transition={{ 
+                    duration: 0.5, 
+                    delay: 1 + stat.delay,
+                    type: "spring",
+                    stiffness: 200
+                  }}
+                >
+                  {stat.value}
+                </motion.div>
+                <div className="text-muted-foreground">{stat.label}</div>
+              </motion.div>
+            ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
