@@ -1,41 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Card } from "@/components/ui/card";
 import techBackground from "@/assets/tech-background.jpg";
 import { Database, Lock, Zap, Globe, ArrowRight, Code, Server, Shield, Palette, Layers, Rocket } from "lucide-react";
 import { motion, useInView } from "framer-motion";
-import * as anime from "animejs";
 
 const TechnologySection = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const techIconsRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
-
-  useEffect(() => {
-    if (isInView && techIconsRef.current) {
-      // Anime.js animation for tech icons
-      anime({
-        targets: techIconsRef.current.querySelectorAll('.tech-icon'),
-        scale: [0, 1],
-        rotate: [180, 0],
-        opacity: [0, 1],
-        delay: anime.stagger(150),
-        duration: 800,
-        easing: 'easeOutElastic(1, .8)'
-      });
-
-      // Floating animation for icons
-      anime({
-        targets: techIconsRef.current.querySelectorAll('.tech-card'),
-        translateY: [
-          { value: -10, duration: 2000 },
-          { value: 0, duration: 2000 }
-        ],
-        loop: true,
-        easing: 'easeInOutSine',
-        delay: anime.stagger(200)
-      });
-    }
-  }, [isInView]);
 
   const technologies = [
     {
@@ -140,45 +111,74 @@ const TechnologySection = () => {
         </motion.div>
 
         {/* Technology Icons Grid */}
-        <div ref={techIconsRef} className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
           {technologies.map((tech, index) => {
             const Icon = tech.icon;
             return (
               <motion.div
                 key={index}
-                className="tech-card group"
+                className="group"
+                initial={{ 
+                  scale: 0, 
+                  rotate: 180, 
+                  opacity: 0 
+                }}
+                animate={isInView ? { 
+                  scale: 1, 
+                  rotate: 0, 
+                  opacity: 1 
+                } : {}}
+                transition={{ 
+                  duration: 0.8,
+                  delay: index * 0.15,
+                  type: "spring",
+                  stiffness: 260,
+                  damping: 20
+                }}
                 whileHover={{ 
                   scale: 1.08,
                   rotateY: 10,
                   transition: { duration: 0.3 }
                 }}
               >
-                <Card className="p-8 hover:shadow-glow transition-all duration-300 bg-card/50 backdrop-blur-sm border-2 border-border hover:border-primary/50 relative overflow-hidden h-full">
-                  <motion.div 
-                    className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-10 transition-opacity duration-300" 
-                    style={{ background: `linear-gradient(135deg, var(--primary), var(--secondary))` }}
-                  />
-                  <div className="flex flex-col items-center text-center gap-4 relative z-10">
+                <motion.div
+                  animate={{ 
+                    y: [0, -10, 0] 
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    delay: index * 0.2,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Card className="p-8 hover:shadow-glow transition-all duration-300 bg-card/50 backdrop-blur-sm border-2 border-border hover:border-primary/50 relative overflow-hidden h-full">
                     <motion.div 
-                      className={`tech-icon w-20 h-20 rounded-2xl bg-gradient-to-br ${tech.gradient} flex items-center justify-center shadow-lg`}
-                      whileHover={{ 
-                        rotate: 360,
-                        scale: 1.15,
-                        transition: { duration: 0.6, ease: "easeInOut" }
-                      }}
-                    >
-                      <Icon className="w-10 h-10 text-white" />
-                    </motion.div>
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={isInView ? { opacity: 1 } : {}}
-                      transition={{ delay: 0.5 + index * 0.1 }}
-                    >
-                      <h3 className="text-foreground font-bold mb-1">{tech.name}</h3>
-                      <p className="text-sm text-muted-foreground">{tech.description}</p>
-                    </motion.div>
-                  </div>
-                </Card>
+                      className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-10 transition-opacity duration-300" 
+                      style={{ background: `linear-gradient(135deg, var(--primary), var(--secondary))` }}
+                    />
+                    <div className="flex flex-col items-center text-center gap-4 relative z-10">
+                      <motion.div 
+                        className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${tech.gradient} flex items-center justify-center shadow-lg`}
+                        whileHover={{ 
+                          rotate: 360,
+                          scale: 1.15,
+                          transition: { duration: 0.6, ease: "easeInOut" }
+                        }}
+                      >
+                        <Icon className="w-10 h-10 text-white" />
+                      </motion.div>
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={isInView ? { opacity: 1 } : {}}
+                        transition={{ delay: 0.5 + index * 0.1 }}
+                      >
+                        <h3 className="text-foreground font-bold mb-1">{tech.name}</h3>
+                        <p className="text-sm text-muted-foreground">{tech.description}</p>
+                      </motion.div>
+                    </div>
+                  </Card>
+                </motion.div>
               </motion.div>
             );
           })}
