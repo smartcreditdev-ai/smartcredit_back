@@ -8,7 +8,7 @@ import TechnologySection from "@/components/TechnologySection";
 import FeaturesSection from "@/components/FeaturesSection";
 import BenefitsSection from "@/components/BenefitsSection";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import heroImage from "@/assets/hero-smartcredit.jpg";
+import heroImage from "@/assets/hero-back.png";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 
