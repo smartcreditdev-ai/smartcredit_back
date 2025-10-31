@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
+import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -18,11 +19,8 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl">SC</span>
-            </div>
-            <span className="text-xl font-bold text-foreground">SmartCredit</span>
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="SmartCredit Logo" className="h-12 w-auto" />
           </div>
 
           {/* Desktop Navigation */}

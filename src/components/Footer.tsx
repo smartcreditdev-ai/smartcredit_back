@@ -75,7 +75,7 @@ const Footer = () => {
               rel="noopener noreferrer"
               className="text-primary hover:underline"
             >
-              Da Corta Software
+              SmartBot
             </a>
           </p>
         </div>
