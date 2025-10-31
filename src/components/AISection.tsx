@@ -25,12 +25,12 @@ const AISection = () => {
     window.addEventListener("resize", resizeCanvas);
 
     // Initialize nodes
-    const nodeCount = 50;
+    const nodeCount = 80;
     const initialNodes = Array.from({ length: nodeCount }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
+      vx: (Math.random() - 0.5) * 0.8,
+      vy: (Math.random() - 0.5) * 0.8,
     }));
     setNodes(initialNodes);
 
@@ -53,8 +53,7 @@ const AISection = () => {
         });
 
         // Draw connections
-        ctx.strokeStyle = "rgba(59, 130, 246, 0.15)";
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 1.5;
 
         for (let i = 0; i < updatedNodes.length; i++) {
           for (let j = i + 1; j < updatedNodes.length; j++) {
@@ -62,9 +61,13 @@ const AISection = () => {
             const dy = updatedNodes[i].y - updatedNodes[j].y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            if (distance < 150) {
-              const opacity = (1 - distance / 150) * 0.3;
-              ctx.strokeStyle = `rgba(59, 130, 246, ${opacity})`;
+            if (distance < 120) {
+              const opacity = (1 - distance / 120) * 0.5;
+              // Alternate between primary blue and secondary teal
+              const color = i % 2 === 0 
+                ? `rgba(59, 130, 246, ${opacity})` // Primary blue
+                : `rgba(20, 184, 166, ${opacity})`; // Secondary teal
+              ctx.strokeStyle = color;
               ctx.beginPath();
               ctx.moveTo(updatedNodes[i].x, updatedNodes[i].y);
               ctx.lineTo(updatedNodes[j].x, updatedNodes[j].y);
@@ -73,11 +76,31 @@ const AISection = () => {
           }
         }
 
-        // Draw nodes
-        updatedNodes.forEach((node) => {
-          ctx.fillStyle = "rgba(59, 130, 246, 0.6)";
+        // Draw nodes with glow effect
+        updatedNodes.forEach((node, index) => {
+          // Glow
+          const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 8);
+          const color = index % 3 === 0 
+            ? 'rgba(59, 130, 246, 0.4)' // Primary
+            : index % 3 === 1
+            ? 'rgba(20, 184, 166, 0.4)' // Secondary
+            : 'rgba(249, 115, 22, 0.4)'; // Accent
+          gradient.addColorStop(0, color);
+          gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+          ctx.fillStyle = gradient;
           ctx.beginPath();
-          ctx.arc(node.x, node.y, 3, 0, Math.PI * 2);
+          ctx.arc(node.x, node.y, 8, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Core
+          const coreColor = index % 3 === 0 
+            ? 'rgba(59, 130, 246, 1)' // Primary
+            : index % 3 === 1
+            ? 'rgba(20, 184, 166, 1)' // Secondary
+            : 'rgba(249, 115, 22, 1)'; // Accent
+          ctx.fillStyle = coreColor;
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
           ctx.fill();
         });
 
@@ -139,7 +162,7 @@ const AISection = () => {
       {/* Neural Network Canvas Background */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none opacity-40"
+        className="absolute inset-0 w-full h-full pointer-events-none opacity-70"
       />
 
       {/* Gradient Overlays */}
