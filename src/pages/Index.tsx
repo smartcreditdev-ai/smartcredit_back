@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import TechnologySection from "@/components/TechnologySection";
 import FeaturesSection from "@/components/FeaturesSection";
 import BenefitsSection from "@/components/BenefitsSection";
+import AISection from "@/components/AISection";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import heroImage from "@/assets/hero-back.png";
 import { useState } from "react";
@@ -68,6 +69,9 @@ const Index = () => {
 
       {/* Features Section */}
       <FeaturesSection />
+
+      {/* AI Section */}
+      <AISection />
 
       {/* Technology Section */}
       <TechnologySection />
