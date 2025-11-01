@@ -4,7 +4,7 @@ import whatsappLogo from "@/assets/whatsapp-logo.svg";
 const WhatsAppButton = () => {
   const handleWhatsAppClick = () => {
     // Replace with your actual WhatsApp number
-    const phoneNumber = "1234567890"; // Format: country code + number (no + or spaces)
+    const phoneNumber = "50763803725"; // Format: country code + number (no + or spaces)
     const message = encodeURIComponent("Hola, me gustaría obtener más información sobre SmartCredit");
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
   };

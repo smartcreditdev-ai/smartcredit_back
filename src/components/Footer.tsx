@@ -51,7 +51,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-muted-foreground">
                 <Mail className="w-4 h-4" />
-                <span>info@smartcredit.com</span>
+                <span>comercial@smartbotla.com</span>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
                 <Phone className="w-4 h-4" />
@@ -59,7 +59,8 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="w-4 h-4" />
-                <span>Ciudad, País</span>
+                <span>PH Blue Business Center, Calle 67,
+                San Fransisco, Provincia de Panamá.</span>
               </li>
             </ul>
           </div>
