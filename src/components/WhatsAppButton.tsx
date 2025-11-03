@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import whatsappLogo from "@/assets/whatsapp-logo.svg";
+import { MessageCircle } from "lucide-react";
 
 const WhatsAppButton = () => {
   const handleWhatsAppClick = () => {
@@ -24,19 +24,7 @@ const WhatsAppButton = () => {
       }}
       aria-label="Contactar por WhatsApp"
     >
-      <img src={whatsappLogo} alt="WhatsApp" className="w-6 h-6" />
-      <motion.div
-        className="absolute inset-0 rounded-full bg-[#25D366]"
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.5, 0, 0.5]
-        }}
-        transition={{
-          duration: 2,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
+      <MessageCircle className="w-6 h-6" />
     </motion.button>
   );
 };

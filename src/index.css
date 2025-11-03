@@ -31,7 +31,7 @@ All colors MUST be HSL.
     --muted-foreground: 215 15% 45%;
 
     /* Accent: Vibrant orange for CTAs */
-    --accent: 25 95% 55%;
+    --accent: 38 98% 47%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -87,7 +87,7 @@ All colors MUST be HSL.
     --muted: 215 25% 15%;
     --muted-foreground: 215 15% 65%;
 
-    --accent: 25 95% 60%;
+    --accent: 38 98% 47%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 50%;
@@ -121,9 +121,13 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
+  
+  html {
+    font-family: "Open Sans", system-ui, sans-serif;
+  }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
     font-feature-settings: "kern" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

@@ -23,10 +23,18 @@ const Index = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const subject = `Solicitud de demo - ${formData.nombre} (${formData.entidad})`;
+    const body = `Nombre: ${formData.nombre}\nEmail: ${formData.email}\nEntidad: ${formData.entidad}\n\nMensaje:\n${formData.mensaje}`;
+    const mailtoLink = `mailto:comercial@smartbotla.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    window.location.href = mailtoLink;
+
     toast({
-      title: "¡Solicitud enviada!",
-      description: "Nos pondremos en contacto contigo pronto.",
+      title: "Abriendo tu cliente de correo...",
+      description: "Revisa el correo prellenado para enviarlo a comercial@smartbotla.com.",
     });
+
     setFormData({ nombre: "", email: "", entidad: "", mensaje: "" });
   };
 
@@ -40,7 +48,7 @@ const Index = () => {
       <section id="inicio" className="pt-24 pb-20 gradient-hero">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
+            <div className="space-y-6 order-2 lg:order-1">
               <h1 className="text-foreground">
                 Gestione su cartera de créditos con precisión y agilidad
               </h1>
@@ -56,7 +64,7 @@ const Index = () => {
                 </Button>
               </div>
             </div>
-            <div className="relative">
+            <div className="relative order-1 lg:order-2">
               <img 
                 src={heroImage} 
                 alt="SmartCredit Dashboard - Gestión de créditos moderna" 

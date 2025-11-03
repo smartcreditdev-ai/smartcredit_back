@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { Brain, FileText, BarChart3, Sparkles, Lightbulb, TrendingUp } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 
@@ -6,7 +6,7 @@ const AISection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
-  const [nodes, setNodes] = useState<Array<{ x: number; y: number; vx: number; vy: number }>>([]);
+  const nodesRef = useRef<Array<{ x: number; y: number; vx: number; vy: number }>>([]);
 
   // Neural network animation
   useEffect(() => {
@@ -16,103 +16,140 @@ const AISection = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    let currentWidth = 0;
+    let currentHeight = 0;
+    
     const resizeCanvas = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      
+      const rect = parent.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const width = Math.max(300, rect.width);
+      const height = Math.max(300, rect.height);
+      
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      
+      // Reset context transform
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+      
+      // Reinitialize nodes if size changed significantly or nodes don't exist
+      if (nodesRef.current.length === 0 || Math.abs(currentWidth - width) > 50 || Math.abs(currentHeight - height) > 50) {
+        currentWidth = width;
+        currentHeight = height;
+        const nodeCount = 80;
+        nodesRef.current = Array.from({ length: nodeCount }, () => ({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.8,
+          vy: (Math.random() - 0.5) * 0.8,
+        }));
+      }
     };
 
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
     // Initialize nodes
-    const nodeCount = 80;
-    const initialNodes = Array.from({ length: nodeCount }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.8,
-      vy: (Math.random() - 0.5) * 0.8,
-    }));
-    setNodes(initialNodes);
+    if (nodesRef.current.length === 0) {
+      const nodeCount = 80;
+      const rect = canvas.parentElement?.getBoundingClientRect() || { width: 800, height: 600 };
+      nodesRef.current = Array.from({ length: nodeCount }, () => ({
+        x: Math.random() * rect.width,
+        y: Math.random() * rect.height,
+        vx: (Math.random() - 0.5) * 0.8,
+        vy: (Math.random() - 0.5) * 0.8,
+      }));
+    }
 
     let animationFrameId: number;
     const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const dpr = window.devicePixelRatio || 1;
+      const canvasWidth = canvas.width / dpr;
+      const canvasHeight = canvas.height / dpr;
+      
+      // Ensure context is properly scaled
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-      // Update and draw nodes
-      setNodes((prevNodes) => {
-        const updatedNodes = prevNodes.map((node) => {
-          let { x, y, vx, vy } = node;
+      const nodes = nodesRef.current;
 
-          x += vx;
-          y += vy;
+      // Update nodes
+      for (let i = 0; i < nodes.length; i++) {
+        nodes[i].x += nodes[i].vx;
+        nodes[i].y += nodes[i].vy;
 
-          if (x < 0 || x > canvas.width) vx *= -1;
-          if (y < 0 || y > canvas.height) vy *= -1;
+        if (nodes[i].x < 0 || nodes[i].x > canvasWidth) nodes[i].vx *= -1;
+        if (nodes[i].y < 0 || nodes[i].y > canvasHeight) nodes[i].vy *= -1;
+      }
 
-          return { x, y, vx, vy };
-        });
+      // Draw connections
+      ctx.lineWidth = 1.5;
 
-        // Draw connections
-        ctx.lineWidth = 1.5;
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
 
-        for (let i = 0; i < updatedNodes.length; i++) {
-          for (let j = i + 1; j < updatedNodes.length; j++) {
-            const dx = updatedNodes[i].x - updatedNodes[j].x;
-            const dy = updatedNodes[i].y - updatedNodes[j].y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance < 120) {
-              const opacity = (1 - distance / 120) * 0.5;
-              // Alternate between primary blue and secondary teal
-              const color = i % 2 === 0 
-                ? `rgba(59, 130, 246, ${opacity})` // Primary blue
-                : `rgba(20, 184, 166, ${opacity})`; // Secondary teal
-              ctx.strokeStyle = color;
-              ctx.beginPath();
-              ctx.moveTo(updatedNodes[i].x, updatedNodes[i].y);
-              ctx.lineTo(updatedNodes[j].x, updatedNodes[j].y);
-              ctx.stroke();
-            }
+          if (distance < 120) {
+            const opacity = (1 - distance / 120) * 0.5;
+            // Alternate between primary blue and secondary teal
+            const color = i % 2 === 0 
+              ? `rgba(59, 130, 246, ${opacity})` // Primary blue
+              : `rgba(20, 184, 166, ${opacity})`; // Secondary teal
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.stroke();
           }
         }
+      }
 
-        // Draw nodes with glow effect
-        updatedNodes.forEach((node, index) => {
-          // Glow
-          const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 8);
-          const color = index % 3 === 0 
-            ? 'rgba(59, 130, 246, 0.4)' // Primary
-            : index % 3 === 1
-            ? 'rgba(20, 184, 166, 0.4)' // Secondary
-            : 'rgba(249, 115, 22, 0.4)'; // Accent
-          gradient.addColorStop(0, color);
-          gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
-          ctx.fillStyle = gradient;
-          ctx.beginPath();
-          ctx.arc(node.x, node.y, 8, 0, Math.PI * 2);
-          ctx.fill();
+      // Draw nodes with glow effect
+      nodes.forEach((node, index) => {
+        // Glow
+        const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 8);
+        const color = index % 3 === 0 
+          ? 'rgba(59, 130, 246, 0.4)' // Primary
+          : index % 3 === 1
+          ? 'rgba(20, 184, 166, 0.4)' // Secondary
+          : 'rgba(239, 165, 2, 0.4)'; // Accent
+        gradient.addColorStop(0, color);
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 8, 0, Math.PI * 2);
+        ctx.fill();
 
-          // Core
-          const coreColor = index % 3 === 0 
-            ? 'rgba(59, 130, 246, 1)' // Primary
-            : index % 3 === 1
-            ? 'rgba(20, 184, 166, 1)' // Secondary
-            : 'rgba(249, 115, 22, 1)'; // Accent
-          ctx.fillStyle = coreColor;
-          ctx.beginPath();
-          ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
-          ctx.fill();
-        });
-
-        return updatedNodes;
+        // Core
+        const coreColor = index % 3 === 0 
+          ? 'rgba(59, 130, 246, 1)' // Primary
+          : index % 3 === 1
+          ? 'rgba(20, 184, 166, 1)' // Secondary
+          : 'rgba(239, 165, 2, 1)'; // Accent
+        ctx.fillStyle = coreColor;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
+        ctx.fill();
       });
 
       animationFrameId = requestAnimationFrame(animate);
     };
 
-    animate();
+    // Start animation with a small delay to ensure canvas is rendered
+    const timeoutId = setTimeout(() => {
+      animate();
+    }, 100);
 
     return () => {
+      clearTimeout(timeoutId);
       window.removeEventListener("resize", resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
@@ -162,7 +199,8 @@ const AISection = () => {
       {/* Neural Network Canvas Background */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none opacity-70"
+        className="absolute inset-0 w-full h-full pointer-events-none opacity-60 z-0"
+        style={{ minHeight: '600px' }}
       />
 
       {/* Gradient Overlays */}

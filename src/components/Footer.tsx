@@ -1,4 +1,5 @@
 import { Mail, Phone, MapPin } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Footer = () => {
   return (
@@ -8,10 +9,7 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-xl">SC</span>
-              </div>
-              <span className="text-xl font-bold text-foreground">SmartCredit</span>
+              <img src={logo} alt="SmartCredit Logo" className="h-20 w-auto" />
             </div>
             <p className="text-muted-foreground">
               Plataforma integral de gestión de créditos para microfinancieras y cooperativas.
