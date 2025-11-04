@@ -1,12 +1,15 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Brain, FileText, BarChart3, Sparkles, Lightbulb, TrendingUp } from "lucide-react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useMotionValue, useTransform, animate } from "framer-motion";
 
 const AISection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
   const nodesRef = useRef<Array<{ x: number; y: number; vx: number; vy: number }>>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const x = useMotionValue(0);
 
   // Neural network animation
   useEffect(() => {
@@ -194,6 +197,43 @@ const AISection = () => {
     },
   ];
 
+  const aiProviders = [
+    "OpenAI",
+    "Gemini",
+    "Llama 3",
+    "Copilot",
+    "Grok",
+    "Claude",
+    "Titan"
+  ];
+
+  // Auto-scroll animation when not dragging
+  useEffect(() => {
+    if (!isDragging && isInView) {
+      // Calculate approximate width: each label (160px) + gap (24px) = ~184px per item
+      const itemWidth = 184;
+      const totalWidth = itemWidth * aiProviders.length;
+      const currentX = x.get();
+      
+      // Reset to start if we've scrolled past the first set
+      if (currentX <= -totalWidth) {
+        x.set(0);
+      }
+      
+      const animation = animate(x, currentX - totalWidth, {
+        duration: 30,
+        ease: "linear",
+        onComplete: () => {
+          if (!isDragging) {
+            x.set(0);
+          }
+        }
+      });
+      
+      return () => animation.stop();
+    }
+  }, [isDragging, isInView, x, aiProviders.length]);
+
   return (
     <section id="inteligencia-artificial" ref={sectionRef} className="py-20 relative overflow-hidden bg-gradient-to-b from-background via-primary/5 to-background">
       {/* Neural Network Canvas Background */}
@@ -232,10 +272,10 @@ const AISection = () => {
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Integración con OpenAI
+            Integración de Inteligencia Artificial
           </motion.h2>
           <motion.p
-            className="text-xl text-muted-foreground max-w-3xl mx-auto"
+            className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -245,6 +285,49 @@ const AISection = () => {
             transformar tus datos en{" "}
             <span className="text-secondary font-semibold">decisiones estratégicas</span>
           </motion.p>
+          
+          {/* AI Providers Slider */}
+          <motion.div
+            className="overflow-hidden mb-8 cursor-grab active:cursor-grabbing"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            onPointerDown={() => setIsDragging(true)}
+            onPointerUp={() => setIsDragging(false)}
+            onPointerLeave={() => setIsDragging(false)}
+          >
+            <motion.div
+              ref={sliderRef}
+              className="flex gap-6 items-center"
+              style={{ x }}
+              drag="x"
+              dragConstraints={{ left: -184 * aiProviders.length * 2, right: 0 }}
+              dragElastic={0.2}
+              onDragStart={() => setIsDragging(true)}
+              onDragEnd={() => setIsDragging(false)}
+            >
+              {/* First set of items */}
+              {aiProviders.map((provider, idx) => (
+                <div
+                  key={idx}
+                  className="px-6 py-4 rounded-lg bg-card/80 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-md flex items-center justify-center shrink-0"
+                  style={{ minWidth: '160px', height: '80px' }}
+                >
+                  <span className="text-lg font-semibold text-foreground whitespace-nowrap">{provider}</span>
+                </div>
+              ))}
+              {/* Duplicate for seamless loop */}
+              {aiProviders.map((provider, idx) => (
+                <div
+                  key={`dup-${idx}`}
+                  className="px-6 py-4 rounded-lg bg-card/80 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-md flex items-center justify-center shrink-0"
+                  style={{ minWidth: '160px', height: '80px' }}
+                >
+                  <span className="text-lg font-semibold text-foreground whitespace-nowrap">{provider}</span>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
         </motion.div>
 
         {/* Main Features Grid */}
