@@ -12,7 +12,7 @@ const WhatsAppButton = () => {
   return (
     <motion.button
       onClick={handleWhatsAppClick}
-      className="fixed right-6 top-1/2 -translate-y-1/2 z-40 bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-full p-4 shadow-glow transition-smooth"
+      className="fixed right-6 bottom-24 z-40 bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-full p-4 shadow-glow transition-smooth"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       whileHover={{ scale: 1.1 }}
