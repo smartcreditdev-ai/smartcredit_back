@@ -26,13 +26,13 @@ const Index = () => {
 
     const subject = `Solicitud de demo - ${formData.nombre} (${formData.entidad})`;
     const body = `Nombre: ${formData.nombre}\nEmail: ${formData.email}\nEntidad: ${formData.entidad}\n\nMensaje:\n${formData.mensaje}`;
-    const mailtoLink = `mailto:comercial@smartbotla.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailtoLink = `mailto:comercial_ca@smartbotla.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
     window.location.href = mailtoLink;
 
     toast({
       title: "Abriendo tu cliente de correo...",
-      description: "Revisa el correo prellenado para enviarlo a comercial@smartbotla.com.",
+      description: "Revisa el correo prellenado para enviarlo a comercial_ca@smartbotla.com.",
     });
 
     setFormData({ nombre: "", email: "", entidad: "", mensaje: "" });
