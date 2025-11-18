@@ -42,10 +42,13 @@ const Header = () => {
             </button>
           </nav>
 
-          {/* CTA Button */}
-          <div className="hidden md:block">
+          {/* CTA Buttons */}
+          <div className="hidden md:flex items-center gap-3">
             <Button variant="cta" size="lg" onClick={() => scrollToSection("contacto")}>
               Solicitar Demo
+            </Button>
+            <Button variant="outline" size="lg" onClick={() => window.open("https://app.smartcreditla.com/login", "_blank")} className="shadow-lg hover:shadow-glow">
+              Iniciar Sesión
             </Button>
           </div>
 
@@ -75,6 +78,9 @@ const Header = () => {
             </button>
             <Button variant="cta" size="lg" onClick={() => scrollToSection("contacto")} className="w-full">
               Solicitar Demo
+            </Button>
+            <Button variant="outline" size="lg" onClick={() => window.open("https://app.smartcreditla.com/login", "_blank")} className="w-full shadow-lg hover:shadow-glow">
+              Iniciar Sesión
             </Button>
           </div>
         )}
